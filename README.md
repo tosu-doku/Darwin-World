@@ -1,0 +1,2 @@
+# PO_2025_PT1130_KRUPA_MAKA
+OOP Project
