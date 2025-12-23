@@ -37,7 +37,11 @@ public class JungleMap implements WorldMap{
 
     @Override
     public void move(Animal animal) {
-
+        if(objectAt(animal.getPosition()).equals(animal)){
+            animals.remove(animal.getPosition());
+            animal.move(this);
+            animals.put(animal.getPosition(),animal);
+        }
     }
 
     @Override

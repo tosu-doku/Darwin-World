@@ -52,14 +52,21 @@ public class Animal implements WorldElement {
     public void move(MoveValidator moveValidator){
         MapDirection directionToMove = GeneParser.parse(this.genotype.get(this.currentIndex),this.direction);
         Vector2d posAfterMove = this.position.add(directionToMove.toVector());
-        if (moveValidator.isInBounds(posAfterMove)){
+        if(!isDead){
+            if (moveValidator.isInBounds(posAfterMove)){
+                System.out.println(String.format("%s -> %s, (%s -> %s)",this.position,posAfterMove,this.direction,directionToMove));
+                this.position = posAfterMove;
+            } else {
+                System.out.println(String.format("No movement, (%s -> %s)",this.direction,directionToMove));
+            }
             this.direction = directionToMove;
-            this.position = posAfterMove;
-        }
-        //zawijanie jak na kuli
+            //zawijanie jak na kuli
 
-        this.currentIndex = (this.currentIndex + 1)% genotype.size();
-        this.energy -= MOVE_ENERGY_COST;
+            this.currentIndex = (this.currentIndex + 1)% genotype.size();
+            this.energy -= MOVE_ENERGY_COST;
+            if(this.energy <= 0){
+                isDead = true;
+        }}
     }
 
     @Override
