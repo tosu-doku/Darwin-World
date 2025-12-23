@@ -5,6 +5,11 @@ import agh.ics.oop.model.util.GeneParser;
 import java.util.ArrayList;
 import java.util.Objects;
 
+
+/**
+ * An animal living in the {@link JungleMap},
+ * movements of the Animal are based on their genotype
+*/
 public class Animal implements WorldElement {
     private final ArrayList<Gene> genotype;
     private int currentIndex = 0;
