@@ -48,4 +48,12 @@ public class Animal implements WorldElement {
         //obnizenie energii
     }
 
+    @Override
+    public String toString(){
+        if(!isDead){
+            return "A";
+        } else {
+            return "X";
+        }
+    }
 }
