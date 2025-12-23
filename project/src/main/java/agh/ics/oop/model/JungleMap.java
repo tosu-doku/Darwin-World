@@ -9,8 +9,8 @@ public class JungleMap implements WorldMap{
     private final UUID mapId = UUID.randomUUID();
     private final Boundary mapBoundary;
     private final Boundary jungleBoundary;
-    private Map<Vector2d, Animal> Animals;
-    MapVisualizer visualizer = new MapVisualizer(this);
+    private Map<Vector2d, Animal> animals = new HashMap<>();
+    private final MapVisualizer visualizer = new MapVisualizer(this);
 
     public JungleMap(int width, int height){
         this.mapBoundary = new Boundary(new Vector2d(0,0),new Vector2d(width-1,height-1));
@@ -30,7 +30,9 @@ public class JungleMap implements WorldMap{
 
     @Override
     public void place(Animal animal) {
-
+        if(!isOccupied(animal.getPosition())) {
+            animals.put(animal.getPosition(), animal);
+        }
     }
 
     @Override
@@ -40,17 +42,17 @@ public class JungleMap implements WorldMap{
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        return false;
+        return objectAt(position) instanceof Animal;
     }
 
     @Override
     public WorldElement objectAt(Vector2d position) {
-        return null;
+        return animals.get(position);
     }
 
     @Override
     public List<WorldElement> getElements() {
-        return new ArrayList<WorldElement>(Animals.values());
+        return new ArrayList<WorldElement>(animals.values());
     }
 
     @Override
