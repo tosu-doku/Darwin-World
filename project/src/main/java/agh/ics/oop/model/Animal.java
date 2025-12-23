@@ -17,6 +17,9 @@ public class Animal implements WorldElement {
     private Vector2d position;
     private boolean isDead = false;
 
+    public void setDead(boolean dead) {
+        isDead = dead;
+    }
 
     public Animal(Vector2d position, ArrayList<Gene> genotype){
         this.genotype = genotype;
@@ -54,9 +57,23 @@ public class Animal implements WorldElement {
     @Override
     public String toString(){
         if(!isDead){
-            return "A";
+            return showDirection(this.direction);
         } else {
             return "X";
         }
+    }
+
+    private String showDirection(MapDirection dir){
+        return switch (dir){
+            // Unicode arrows
+            case NORTH -> "\u2191";
+            case NORTHEAST -> "\u2197";
+            case EAST -> "\u2192";
+            case SOUTHEAST -> "\u2198";
+            case SOUTH -> "\u2193";
+            case SOUTHWEST -> "\u2199";
+            case WEST -> "\u2190";
+            case NORTHWEST -> "\u2196";
+        };
     }
 }
