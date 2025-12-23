@@ -16,6 +16,9 @@ public class Animal implements WorldElement {
     private MapDirection direction;
     private Vector2d position;
     private boolean isDead = false;
+    private final int ENERGY_LIMIT = 100;
+    private final int MOVE_ENERGY_COST = 5;
+    private int energy;
 
     public void setDead(boolean dead) {
         isDead = dead;
@@ -25,11 +28,16 @@ public class Animal implements WorldElement {
         this.genotype = genotype;
         this.direction = MapDirection.NORTH;
         this.position = position;
+        this.energy = 50;
     }
 
     public MapDirection getDirection() {
         return this.direction;
     }
+
+    public int getEnergy() { return energy; }
+
+    public void setEnergy(int energy) { this.energy = Math.max(energy,ENERGY_LIMIT); }
 
     @Override
     public Vector2d getPosition() {
@@ -51,7 +59,7 @@ public class Animal implements WorldElement {
         //zawijanie jak na kuli
 
         this.currentIndex = (this.currentIndex + 1)% genotype.size();
-        //obnizenie energii
+        this.energy -= MOVE_ENERGY_COST;
     }
 
     @Override
