@@ -38,12 +38,15 @@ public class Animal implements WorldElement {
         return Objects.equals(this.position,position);
     }
 
-    public void move(){
+    public void move(MoveValidator moveValidator){
         MapDirection directionToMove = GeneParser.parse(this.genotype.get(this.currentIndex),this.direction);
         Vector2d posAfterMove = this.position.add(directionToMove.toVector());
-        //if validator
-        this.direction = directionToMove;
-        this.position = posAfterMove;
+        if (moveValidator.isInBounds(posAfterMove)){
+            this.direction = directionToMove;
+            this.position = posAfterMove;
+        }
+        //zawijanie jak na kuli
+
         this.currentIndex = (this.currentIndex + 1)% genotype.size();
         //obnizenie energii
     }
