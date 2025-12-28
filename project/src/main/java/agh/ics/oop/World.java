@@ -24,11 +24,7 @@ public class World {
          JungleMap map1 = new JungleMap(10,10);
          Animal cat = new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(0),new Gene(1))));
 
-         Animal catDead = new Animal(new Vector2d(1,2),new ArrayList<Gene>());
-         catDead.setDead(true);
-
          map1.place(cat);
-         map1.place(catDead);
 
          map1.move(cat);
          map1.move(cat);

@@ -15,14 +15,10 @@ public class Animal implements WorldElement {
     private int currentIndex = 0;
     private MapDirection direction;
     private Vector2d position;
-    private boolean isDead = false;
+    private boolean alive = true;
     private final int ENERGY_LIMIT = 100;
     private final int MOVE_ENERGY_COST = 5;
     private int energy;
-
-    public void setDead(boolean dead) {
-        isDead = dead;
-    }
 
     public Animal(Vector2d position, ArrayList<Gene> genotype){
         this.genotype = genotype;
@@ -37,8 +33,6 @@ public class Animal implements WorldElement {
 
     public int getEnergy() { return energy; }
 
-    public void setEnergy(int energy) { this.energy = Math.max(energy,ENERGY_LIMIT); }
-
     @Override
     public Vector2d getPosition() {
         return this.position;
@@ -50,9 +44,9 @@ public class Animal implements WorldElement {
     }
 
     public void move(MoveValidator moveValidator){
-        MapDirection directionToMove = GeneParser.parse(this.genotype.get(this.currentIndex),this.direction);
-        Vector2d posAfterMove = this.position.add(directionToMove.toVector());
-        if(!isDead){
+        if(alive){
+            MapDirection directionToMove = GeneParser.parse(this.genotype.get(this.currentIndex),this.direction);
+            Vector2d posAfterMove = this.position.add(directionToMove.toVector());
             if (moveValidator.isInBounds(posAfterMove)){
                 System.out.println(String.format("%s -> %s, (%s -> %s)",this.position,posAfterMove,this.direction,directionToMove));
                 this.position = posAfterMove;
@@ -65,13 +59,13 @@ public class Animal implements WorldElement {
             this.currentIndex = (this.currentIndex + 1)% genotype.size();
             this.energy -= MOVE_ENERGY_COST;
             if(this.energy <= 0){
-                isDead = true;
+                alive = false;
         }}
     }
 
     @Override
     public String toString(){
-        if(!isDead){
+        if(alive){
             return showDirection(this.direction);
         } else {
             return "X";
