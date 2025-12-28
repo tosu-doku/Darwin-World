@@ -15,18 +15,23 @@ public class Animal implements WorldElement {
     private int currentIndex = 0;
     private MapDirection direction;
     private Vector2d position;
-    private boolean isDead = false;
-
+    private boolean alive = true;
+    private final int ENERGY_LIMIT = 100;
+    private final int MOVE_ENERGY_COST = 5;
+    private int energy;
 
     public Animal(Vector2d position, ArrayList<Gene> genotype){
         this.genotype = genotype;
         this.direction = MapDirection.NORTH;
         this.position = position;
+        this.energy = 50;
     }
 
     public MapDirection getDirection() {
         return this.direction;
     }
+
+    public int getEnergy() { return energy; }
 
     @Override
     public Vector2d getPosition() {
@@ -39,24 +44,45 @@ public class Animal implements WorldElement {
     }
 
     public void move(MoveValidator moveValidator){
-        MapDirection directionToMove = GeneParser.parse(this.genotype.get(this.currentIndex),this.direction);
-        Vector2d posAfterMove = this.position.add(directionToMove.toVector());
-        if (moveValidator.isInBounds(posAfterMove)){
+        if(alive){
+            MapDirection directionToMove = GeneParser.parse(this.genotype.get(this.currentIndex),this.direction);
+            Vector2d posAfterMove = this.position.add(directionToMove.toVector());
+            if (moveValidator.isInBounds(posAfterMove)){
+                System.out.println(String.format("%s -> %s, (%s -> %s)",this.position,posAfterMove,this.direction,directionToMove));
+                this.position = posAfterMove;
+            } else {
+                System.out.println(String.format("No movement, (%s -> %s)",this.direction,directionToMove));
+            }
             this.direction = directionToMove;
-            this.position = posAfterMove;
-        }
-        //zawijanie jak na kuli
+            //zawijanie jak na kuli
 
-        this.currentIndex = (this.currentIndex + 1)% genotype.size();
-        //obnizenie energii
+            this.currentIndex = (this.currentIndex + 1)% genotype.size();
+            this.energy -= MOVE_ENERGY_COST;
+            if(this.energy <= 0){
+                alive = false;
+        }}
     }
 
     @Override
     public String toString(){
-        if(!isDead){
-            return "A";
+        if(alive){
+            return showDirection(this.direction);
         } else {
             return "X";
         }
+    }
+
+    private String showDirection(MapDirection dir){
+        return switch (dir){
+            // Unicode arrows
+            case NORTH -> "\u2191";
+            case NORTHEAST -> "\u2197";
+            case EAST -> "\u2192";
+            case SOUTHEAST -> "\u2198";
+            case SOUTH -> "\u2193";
+            case SOUTHWEST -> "\u2199";
+            case WEST -> "\u2190";
+            case NORTHWEST -> "\u2196";
+        };
     }
 }
