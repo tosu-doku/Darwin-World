@@ -46,7 +46,12 @@ public class JungleMap implements WorldMap{
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        return objectAt(position) instanceof Animal;
+        for (WorldElement elem : objectAt(position)){
+            if(elem instanceof Animal){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
