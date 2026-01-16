@@ -61,7 +61,12 @@ public class JungleMap implements WorldMap{
 
     @Override
     public List<WorldElement> getElements() {
-        return new ArrayList<WorldElement>(animals.values());
+        ArrayList<WorldElement> elements = new ArrayList<>();
+        for (Vector2d pos : map.keySet()){
+            elements.addAll(map.get(pos));
+        }
+
+        return elements;
     }
 
     @Override
