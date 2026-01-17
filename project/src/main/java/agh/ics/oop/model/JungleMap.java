@@ -34,12 +34,10 @@ public class JungleMap implements WorldMap{
 
     @Override
     public void place(Animal animal) {
-//        if(!isOccupied(animal.getPosition())) {
-            if (!animals.containsKey(animal.getPosition())) {
-                animals.put(animal.getPosition(), new ArrayList<>());
-            }
-            animals.get(animal.getPosition()).add(animal);
-//        }
+        if (!animals.containsKey(animal.getPosition())) {
+            animals.put(animal.getPosition(), new ArrayList<>());
+        }
+        animals.get(animal.getPosition()).add(animal);
     }
 
     @Override
@@ -49,7 +47,7 @@ public class JungleMap implements WorldMap{
             ArrayList<Animal> animalListAtPos = animals.get(pos);
             if(animalListAtPos.contains(animal)){
                 animalListAtPos.remove(animal);
-                if(animalListAtPos.size()==0){
+                if(animalListAtPos.isEmpty()){
                     animals.remove(pos);
                 }
                 animal.move(this);
@@ -70,18 +68,22 @@ public class JungleMap implements WorldMap{
                 for (int j=i+1; j<parents.size(); j++){
                     var p1 = parents.get(i);
                     var p2 = parents.get(j);
-                    if(p1.ableToReproduce(REPRODUCE_ENERGY_LIMIT) && p2.ableToReproduce(REPRODUCE_ENERGY_LIMIT)){
-                        p1.useEnergyToReproduce(REPRODUCE_ENERGY_COST);
-                        p2.useEnergyToReproduce(REPRODUCE_ENERGY_COST);
-                        place(new Animal(
-                            p1.getPosition(),
-                            generateNewGenotype(p1.getGenotype(),p1.getEnergy(),p2.getGenotype(),p2.getEnergy()),
-                            2*REPRODUCE_ENERGY_COST
-                            ));
-                        System.out.println("New animal born!");
-                    }
+                    reproduceFinalize(p1, p2);
                 }
             }
+        }
+    }
+
+    private void reproduceFinalize(Animal p1, Animal p2) {
+        if(p1.ableToReproduce(REPRODUCE_ENERGY_LIMIT) && p2.ableToReproduce(REPRODUCE_ENERGY_LIMIT)){
+            p1.useEnergyToReproduce(REPRODUCE_ENERGY_COST);
+            p2.useEnergyToReproduce(REPRODUCE_ENERGY_COST);
+            place(new Animal(
+                p1.getPosition(),
+                generateNewGenotype(p1.getGenotype(), p1.getEnergy(), p2.getGenotype(), p2.getEnergy()),
+                2*REPRODUCE_ENERGY_COST
+                ));
+            System.out.printf("New animal born at: %s%n",p1.getPosition());
         }
     }
 
@@ -128,7 +130,6 @@ public class JungleMap implements WorldMap{
         for (Vector2d pos : map.keySet()){
             elements.addAll(map.get(pos));
         }
-
         return elements;
     }
 
