@@ -20,11 +20,16 @@ public class Animal implements WorldElement {
     private final int MOVE_ENERGY_COST = 5;
     private int energy;
 
-    public Animal(Vector2d position, ArrayList<Gene> genotype){
+
+    public Animal(Vector2d position, ArrayList<Gene> genotype, int energy){
         this.genotype = genotype;
         this.direction = MapDirection.NORTH;
         this.position = position;
-        this.energy = 60;
+        this.energy = energy;
+    }
+
+    public Animal(Vector2d position, ArrayList<Gene> genotype){
+        this(position,genotype,60);
     }
 
     public MapDirection getDirection() {
