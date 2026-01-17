@@ -9,7 +9,7 @@ public class JungleMap implements WorldMap{
     private final UUID mapId = UUID.randomUUID();
     private final Boundary mapBoundary;
     private final Boundary jungleBoundary;
-    private Map<Vector2d, Animal> animals = new HashMap<>();
+    private Map<Vector2d,  ArrayList<Animal>> animals = new HashMap<>();
     private final MapVisualizer visualizer = new MapVisualizer(this);
 
     public JungleMap(int width, int height){
@@ -31,16 +31,23 @@ public class JungleMap implements WorldMap{
     @Override
     public void place(Animal animal) {
         if(!isOccupied(animal.getPosition())) {
-            animals.put(animal.getPosition(), animal);
+            if (!animals.containsKey(animal.getPosition())) {
+                animals.put(animal.getPosition(), new ArrayList<>());
+            }
+            animals.get(animal.getPosition()).add(animal);
         }
     }
 
     @Override
     public void move(Animal animal) {
-        if(this.animals.containsValue(animal)){
-            animals.remove(animal.getPosition());
-            animal.move(this);
-            animals.put(animal.getPosition(),animal);
+        Vector2d pos = animal.getPosition();
+        if (animals.containsKey(pos)) {
+            ArrayList<Animal> animalListAtPos = animals.get(pos);
+            if(animalListAtPos.contains(animal)){
+                animalListAtPos.remove(animal);
+                animal.move(this);
+                animalListAtPos.add(animal);
+            }
         }
     }
 

@@ -13,7 +13,7 @@ public interface WorldMap extends MoveValidator {
 
     boolean isOccupied(Vector2d position);
 
-    WorldElement objectAt(Vector2d position);
+    List<WorldElement> objectAt(Vector2d position);
 
     List<WorldElement> getElements();
 
