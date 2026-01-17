@@ -37,12 +37,12 @@ public class Animal implements WorldElement {
         return genotype;
     }
 
-    public boolean ableToReproduce() {
-        if(this.energy>REPRODUCE_ENERGY_LIMIT){
-            this.energy = this.energy - REPRODUCE_ENERGY_COST;
-            return true;
-        }
-        return false;
+    public boolean ableToReproduce(int energyRequired) {
+        return this.energy > energyRequired;
+    }
+
+    public void useEnergyToReproduce(int energyRequired) {
+        this.energy = this.energy - energyRequired;
     }
 
     @Override

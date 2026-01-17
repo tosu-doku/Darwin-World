@@ -70,9 +70,15 @@ public class JungleMap implements WorldMap{
                 for (int j=i+1; j<parents.size(); j++){
                     var p1 = parents.get(i);
                     var p2 = parents.get(j);
-                    if(p1.ableToReproduce() && p2.ableToReproduce()){
+                    if(p1.ableToReproduce(REPRODUCE_ENERGY_LIMIT) && p2.ableToReproduce(REPRODUCE_ENERGY_LIMIT)){
+                        p1.useEnergyToReproduce(REPRODUCE_ENERGY_COST);
+                        p2.useEnergyToReproduce(REPRODUCE_ENERGY_COST);
+                        place(new Animal(
+                            p1.getPosition(),
+                            generateNewGenotype(p1.getGenotype(),p1.getEnergy(),p2.getGenotype(),p2.getEnergy()),
+                            2*REPRODUCE_ENERGY_COST
+                            ));
                         System.out.println("New animal born!");
-                        place(new Animal(p1.getPosition(),generateNewGenotype(p1.getGenotype(),p1.getEnergy(),p2.getGenotype(),p2.getEnergy())));
                     }
                 }
             }
