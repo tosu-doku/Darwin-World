@@ -17,8 +17,6 @@ public class Animal implements WorldElement {
     private Vector2d position;
     private boolean alive = true;
     private final int ENERGY_LIMIT = 100;
-    private final int REPRODUCE_ENERGY_LIMIT = 50;
-    private final int REPRODUCE_ENERGY_COST = 25;
     private final int MOVE_ENERGY_COST = 5;
     private int energy;
 

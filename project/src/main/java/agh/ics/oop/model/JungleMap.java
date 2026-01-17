@@ -13,6 +13,8 @@ public class JungleMap implements WorldMap{
     private final Boundary jungleBoundary;
     private Map<Vector2d,  ArrayList<Animal>> animals = new HashMap<>();
     private final MapVisualizer visualizer = new MapVisualizer(this);
+    private final int REPRODUCE_ENERGY_LIMIT = 51;
+    private final int REPRODUCE_ENERGY_COST = 25;
 
     public JungleMap(int width, int height){
         this.mapBoundary = new Boundary(new Vector2d(0,0),new Vector2d(width-1,height-1));
