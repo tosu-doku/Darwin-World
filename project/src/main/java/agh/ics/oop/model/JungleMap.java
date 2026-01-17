@@ -113,6 +113,15 @@ public class JungleMap implements WorldMap{
         return animals.getOrDefault(position, new ArrayList<>());
     }
 
+    public ArrayList<Animal> getAnimals() {
+        ArrayList<Animal> allAnimals = new ArrayList<>();
+        for (Vector2d pos : animals.keySet()){
+            allAnimals.addAll(animals.get(pos));
+        }
+
+        return allAnimals;
+    }
+
     @Override
     public List<WorldElement> getElements() {
         ArrayList<WorldElement> elements = new ArrayList<>();
