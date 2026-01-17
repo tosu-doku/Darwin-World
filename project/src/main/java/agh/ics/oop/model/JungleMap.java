@@ -45,8 +45,11 @@ public class JungleMap implements WorldMap{
             ArrayList<Animal> animalListAtPos = animals.get(pos);
             if(animalListAtPos.contains(animal)){
                 animalListAtPos.remove(animal);
+                if(animalListAtPos.size()==0){
+                    animals.remove(pos);
+                }
                 animal.move(this);
-                animalListAtPos.add(animal);
+                place(animal);
             }
         }
     }
@@ -62,8 +65,8 @@ public class JungleMap implements WorldMap{
     }
 
     @Override
-    public WorldElement objectAt(Vector2d position) {
-        return animals.get(position);
+    public List<Animal> objectAt(Vector2d position) {
+        return animals.getOrDefault(position, new ArrayList<>());
     }
 
     @Override
