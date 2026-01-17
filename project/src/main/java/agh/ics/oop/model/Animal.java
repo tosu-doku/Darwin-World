@@ -17,6 +17,8 @@ public class Animal implements WorldElement {
     private Vector2d position;
     private boolean alive = true;
     private final int ENERGY_LIMIT = 100;
+    private final int REPRODUCE_ENERGY_LIMIT = 50;
+    private final int REPRODUCE_ENERGY_COST = 25;
     private final int MOVE_ENERGY_COST = 5;
     private int energy;
 
@@ -24,7 +26,7 @@ public class Animal implements WorldElement {
         this.genotype = genotype;
         this.direction = MapDirection.NORTH;
         this.position = position;
-        this.energy = 50;
+        this.energy = 60;
     }
 
     public MapDirection getDirection() {
@@ -32,6 +34,18 @@ public class Animal implements WorldElement {
     }
 
     public int getEnergy() { return energy; }
+
+    public ArrayList<Gene> getGenotype() {
+        return genotype;
+    }
+
+    public boolean ableToReproduce() {
+        if(this.energy>REPRODUCE_ENERGY_LIMIT){
+            this.energy = this.energy - REPRODUCE_ENERGY_COST;
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public Vector2d getPosition() {
