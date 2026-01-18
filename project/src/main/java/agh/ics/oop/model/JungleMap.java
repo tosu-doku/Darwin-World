@@ -24,8 +24,8 @@ public class JungleMap implements WorldMap{
     private void placeGrass(int amount){
         int highBoundX = mapBoundary.higherBoundary().x()+1;
         int highBoundY = mapBoundary.higherBoundary().y()+1;
-        int lowBoundX = mapBoundary.lowerBoundary().x()+1;
-        int lowBoundY = mapBoundary.lowerBoundary().y()+1;
+        int lowBoundX = mapBoundary.lowerBoundary().x();
+        int lowBoundY = mapBoundary.lowerBoundary().y();
         int totalMapSpace = (highBoundX-lowBoundX)*(highBoundY-lowBoundY);
         amount = Math.min(amount, totalMapSpace);
         boolean reverse = amount > totalMapSpace / 2;
@@ -45,7 +45,7 @@ public class JungleMap implements WorldMap{
     }
 
     private void placeSingularGrass(boolean reverse){
-        boolean willSpawnInJungle = Math.random()<0.8;
+        boolean willSpawnInJungle = reverse ? (Math.random()<0.2) : (Math.random()<0.8);
         int randomY;
         if(willSpawnInJungle){
             randomY = (int) Math.round(Math.random()*(jungleBoundary.higherBoundary().y() - jungleBoundary.lowerBoundary().y()) + jungleBoundary.lowerBoundary().y());
