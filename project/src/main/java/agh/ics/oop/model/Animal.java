@@ -66,6 +66,9 @@ public class Animal implements WorldElement {
             this.alive = false;
     }
 
+    public void restoreEnergy(int amount){
+        this.energy = Math.min(this.energy + amount,ENERGY_LIMIT);
+    }
 
     @Override
     public String toString(){

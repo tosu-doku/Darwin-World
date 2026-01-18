@@ -13,6 +13,7 @@ public class JungleMap implements WorldMap{
     private final MapVisualizer visualizer = new MapVisualizer(this);
     private Map<Vector2d, Grass> grasses = new HashMap<>();
     private final int START_GRASS_AMOUNT = 50;
+    private final int ENERGY_FROM_EATING_GRASS_AMOUNT = 10;
 
     public JungleMap(int width, int height){
         this.mapBoundary = new Boundary(new Vector2d(0,0),new Vector2d(width-1,height-1));
@@ -92,6 +93,13 @@ public class JungleMap implements WorldMap{
             animals.remove(animal.getPosition());
             animal.move(this);
             animals.put(animal.getPosition(),animal);
+        }
+    }
+
+    public void animalTryToEatGrass(Animal animal) {
+        if(grasses.containsKey(animal.getPosition())){
+            animal.restoreEnergy(ENERGY_FROM_EATING_GRASS_AMOUNT);
+            grasses.remove(animal.getPosition());
         }
     }
 

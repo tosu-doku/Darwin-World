@@ -27,7 +27,9 @@ public class World {
          map1.place(cat);
 
          map1.move(cat);
+         map1.animalTryToEatGrass(cat);
          map1.move(cat);
+         map1.animalTryToEatGrass(cat);
 
 
          System.out.println(map1);
