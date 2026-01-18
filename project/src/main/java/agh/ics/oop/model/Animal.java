@@ -58,10 +58,14 @@ public class Animal implements WorldElement {
 
             this.currentIndex = (this.currentIndex + 1)% genotype.size();
             this.energy -= MOVE_ENERGY_COST;
-            if(this.energy <= 0){
-                alive = false;
-        }}
+        }
     }
+
+    public void checkIfDied() {
+        if(this.energy<=0)
+            this.alive = false;
+    }
+
 
     @Override
     public String toString(){
