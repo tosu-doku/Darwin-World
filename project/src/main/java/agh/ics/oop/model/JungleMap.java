@@ -82,7 +82,7 @@ public class JungleMap implements WorldMap{
 
     @Override
     public void place(Animal animal) {
-        if(!isOccupied(animal.getPosition())) {
+        if(!animals.containsKey(animal.getPosition())) {
             animals.put(animal.getPosition(), animal);
         }
     }

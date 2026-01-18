@@ -28,8 +28,10 @@ public class World {
 
          map1.move(cat);
          map1.animalTryToEatGrass(cat);
+         cat.checkIfDied();
          map1.move(cat);
          map1.animalTryToEatGrass(cat);
+         cat.checkIfDied();
 
 
          System.out.println(map1);
