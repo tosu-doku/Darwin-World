@@ -123,8 +123,8 @@ public class JungleMap implements WorldMap{
     }
 
     @Override
-    public Boundary getCurrentBounds() {
-        return null;
+    public Boundary getMapBoundary() {
+        return this.mapBoundary;
     }
 
     @Override

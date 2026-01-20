@@ -48,13 +48,27 @@ public class Animal implements WorldElement {
             MapDirection directionToMove = GeneParser.parse(this.genotype.get(this.currentIndex),this.direction);
             Vector2d posAfterMove = this.position.add(directionToMove.toVector());
             if (moveValidator.isInBounds(posAfterMove)){
-                System.out.println(String.format("%s -> %s, (%s -> %s)",this.position,posAfterMove,this.direction,directionToMove));
-                this.position = posAfterMove;
+                System.out.println(String.format("%s -> %s, (%s -> %s)",
+                        this.position, posAfterMove, this.direction, directionToMove));
             } else {
-                System.out.println(String.format("No movement, (%s -> %s)",this.direction,directionToMove));
+                Vector2d maxBound = moveValidator.getMapBoundary().higherBoundary();
+                if(!moveValidator.isInBounds(this.position.add(new Vector2d(directionToMove.toVector().x(), 0)))){
+                    if(directionToMove.toVector().x()<0){
+                        posAfterMove = new Vector2d(maxBound.x(),posAfterMove.y());
+                    }
+                    else{
+                        posAfterMove = new Vector2d(0,posAfterMove.y());
+                    }
+                }
+                if(!moveValidator.isInBounds(this.position.add(new Vector2d(0,directionToMove.toVector().y())))){
+                    posAfterMove = new Vector2d(maxBound.x()-posAfterMove.x(),this.position.y());
+                    directionToMove = this.direction.rotate(4);
+                }
+                System.out.println(String.format("Warped movement %s -> %s, (%s -> %s)",
+                        this.position, posAfterMove, this.direction, directionToMove));
             }
+            this.position = posAfterMove;
             this.direction = directionToMove;
-            //zawijanie jak na kuli
 
             this.currentIndex = (this.currentIndex + 1)% genotype.size();
             this.energy -= MOVE_ENERGY_COST;
