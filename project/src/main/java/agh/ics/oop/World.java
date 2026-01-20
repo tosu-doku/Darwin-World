@@ -27,15 +27,14 @@ public class World {
          map1.place(cat);
 
          map1.move(cat);
-         System.out.println(map1);
+
+       map1.animalTryToEatGrass(cat);
+         cat.checkIfDied();
          map1.move(cat);
-         System.out.println(map1);
-         map1.move(cat);
-         System.out.println(map1);
-         map1.move(cat);
-         System.out.println(map1);
-         map1.move(cat);
-         System.out.println(map1);
+         map1.animalTryToEatGrass(cat);
+         cat.checkIfDied();
+
+
 
          System.out.println(map1);
     }
