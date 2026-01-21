@@ -1,8 +1,5 @@
 package agh.ics.oop.model;
 
-import agh.ics.oop.model.util.GeneParser;
-
-import java.util.ArrayList;
 import java.util.Objects;
 
 
@@ -11,8 +8,7 @@ import java.util.Objects;
  * movements of the Animal are based on their genotype
 */
 public class Animal implements WorldElement {
-    private final ArrayList<Gene> genotype;
-    private int currentIndex = 0;
+    private final Genotype genotype;
     private MapDirection direction;
     private Vector2d position;
     private boolean alive = true;
@@ -20,15 +16,16 @@ public class Animal implements WorldElement {
     private final int MOVE_ENERGY_COST = 5;
     private int energy;
 
-    public Animal(Vector2d position, ArrayList<Gene> genotype, int energy){
-        this.genotype = genotype;
+    public Animal(Vector2d position, int energy){
+        this.genotype = new Genotype(5);
         this.direction = MapDirection.NORTH;
         this.position = position;
         this.energy = energy;
     }
 
-    public Animal(Vector2d position, ArrayList<Gene> genotype){
-        this(position,genotype,60);
+    public Animal(Vector2d position){
+        this(position,60);
+
     }
 
     public MapDirection getDirection() {
@@ -37,7 +34,7 @@ public class Animal implements WorldElement {
 
     public int getEnergy() { return energy; }
 
-    public ArrayList<Gene> getGenotype() {
+    public Genotype getGenotype() {
         return genotype;
     }
 
@@ -61,7 +58,7 @@ public class Animal implements WorldElement {
 
     public void move(MoveValidator moveValidator){
         if(alive){
-            MapDirection directionToMove = GeneParser.parse(this.genotype.get(this.currentIndex),this.direction);
+            MapDirection directionToMove = genotype.getNewDirection(this.direction);
             Vector2d posAfterMove = this.position.add(directionToMove.toVector());
             if (moveValidator.isInBounds(posAfterMove)){
                 System.out.println(String.format("%s -> %s, (%s -> %s)",
@@ -86,8 +83,9 @@ public class Animal implements WorldElement {
             this.position = posAfterMove;
             this.direction = directionToMove;
 
-            this.currentIndex = (this.currentIndex + 1)% genotype.size();
+            this.genotype.incrementIndex();
             this.energy -= MOVE_ENERGY_COST;
+            this.checkIfDied();
         }
     }
 
