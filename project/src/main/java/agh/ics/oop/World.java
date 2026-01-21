@@ -30,9 +30,12 @@ public class World {
 
          map1.reproduce();
 
-         map1.move(cat);
-         map1.move(cat);
-
+         for (Animal animal : map1.getAnimals()){
+             map1.move(animal);
+             map1.animalTryToEatGrass(animal);
+             map1.move(animal);
+             map1.animalTryToEatGrass(animal);
+         }
 
          System.out.println(map1);
     }
