@@ -13,14 +13,67 @@ public class JungleMap implements WorldMap{
     private final Boundary jungleBoundary;
     private Map<Vector2d,  ArrayList<Animal>> animals = new HashMap<>();
     private final MapVisualizer visualizer = new MapVisualizer(this);
+    private Map<Vector2d, Grass> grasses = new HashMap<>();
+    private final int START_GRASS_AMOUNT = 500;
+    private final int ENERGY_FROM_EATING_GRASS_AMOUNT = 10;
     private final int REPRODUCE_ENERGY_LIMIT = 51;
     private final int REPRODUCE_ENERGY_COST = 25;
 
     public JungleMap(int width, int height){
         this.mapBoundary = new Boundary(new Vector2d(0,0),new Vector2d(width-1,height-1));
-        int offsetY = (int) (height*0.2);
+        int offsetY = (int) (height*0.3);
         this.jungleBoundary = new Boundary(new Vector2d(0,offsetY),new Vector2d(width-1,height-offsetY-1));
+        placeGrass(START_GRASS_AMOUNT);
     }
+
+    private void placeGrass(int amount){
+        int highBoundX = mapBoundary.higherBoundary().x()+1;
+        int highBoundY = mapBoundary.higherBoundary().y()+1;
+        int lowBoundX = mapBoundary.lowerBoundary().x();
+        int lowBoundY = mapBoundary.lowerBoundary().y();
+        int totalMapSpace = (highBoundX-lowBoundX)*(highBoundY-lowBoundY);
+        amount = Math.min(amount, totalMapSpace);
+        boolean reverse = amount > totalMapSpace / 2;
+
+        if(reverse){
+            amount = totalMapSpace - amount;
+            for (int i = lowBoundX; i < highBoundX; i++) {
+                for (int j = lowBoundY; j < highBoundY; j++) {
+                    grasses.put(new Vector2d(i,j),new Grass(new Vector2d(i,j)));
+                }
+            }
+        }
+
+        for (int i = 0; i < amount; i++) {
+            placeSingularGrass(reverse);
+        }
+    }
+
+    private void placeSingularGrass(boolean reverse){
+        boolean willSpawnInJungle = reverse ? (Math.random()<0.2) : (Math.random()<0.8);
+        int randomY;
+        if(willSpawnInJungle){
+            randomY = (int) Math.round(Math.random()*(jungleBoundary.higherBoundary().y() - jungleBoundary.lowerBoundary().y()) + jungleBoundary.lowerBoundary().y());
+        } else {
+            if(Math.random()<0.5){
+                randomY = (int) Math.floor(Math.random()*(jungleBoundary.lowerBoundary().y()));
+            } else {
+                randomY = (int) Math.ceil(Math.random()*(jungleBoundary.lowerBoundary().y()) + jungleBoundary.higherBoundary().y());
+            }
+        }
+
+        int randomX = (int) Math.round(Math.random()*mapBoundary.higherBoundary().x());
+
+        if(grasses.containsKey(new Vector2d(randomX,randomY)) && reverse) {
+            grasses.remove(new Vector2d(randomX, randomY));
+        }
+        else if(!grasses.containsKey(new Vector2d(randomX,randomY)) && !reverse) {
+            grasses.put(new Vector2d(randomX, randomY), new Grass(new Vector2d(randomX, randomY)));
+        } else {
+            placeSingularGrass(reverse);
+        }
+    }
+
 
     @Override
     public boolean isInBounds(Vector2d position){
@@ -37,7 +90,6 @@ public class JungleMap implements WorldMap{
         if (!animals.containsKey(animal.getPosition())) {
             animals.put(animal.getPosition(), new ArrayList<>());
         }
-        animals.get(animal.getPosition()).add(animal);
     }
 
     @Override
@@ -53,6 +105,13 @@ public class JungleMap implements WorldMap{
                 animal.move(this);
                 place(animal);
             }
+        }
+    }
+
+    public void animalTryToEatGrass(Animal animal) {
+        if(grasses.containsKey(animal.getPosition())){
+            animal.restoreEnergy(ENERGY_FROM_EATING_GRASS_AMOUNT);
+            grasses.remove(animal.getPosition());
         }
     }
 
@@ -111,8 +170,15 @@ public class JungleMap implements WorldMap{
     }
 
     @Override
-    public List<Animal> objectAt(Vector2d position) {
-        return animals.getOrDefault(position, new ArrayList<>());
+    public List<? extends WorldElement> objectAt(Vector2d position) {
+        if(animals.get(position)!=null){
+            return animals.get(position);
+        } else if(grasses.get(position)!=null){
+            return List.of(grasses.get(position));
+        }
+        else {
+            return Collections.emptyList();
+        }
     }
 
     public ArrayList<Animal> getAnimals() {
@@ -134,8 +200,8 @@ public class JungleMap implements WorldMap{
     }
 
     @Override
-    public Boundary getCurrentBounds() {
-        return null;
+    public Boundary getMapBoundary() {
+        return this.mapBoundary;
     }
 
     @Override
