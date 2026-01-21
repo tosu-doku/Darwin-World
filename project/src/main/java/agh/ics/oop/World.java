@@ -21,20 +21,21 @@ public class World {
          }
          System.out.println("Hello");
 
-         JungleMap map1 = new JungleMap(5,5);
-         Animal cat = new Animal(new Vector2d(1,1),new ArrayList<Gene>(List.of(new Gene(0),new Gene(0))));
+         JungleMap map1 = new JungleMap(10,10);
+         Animal cat = new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(0),new Gene(1))));
+         Animal tiger = new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(4),new Gene(7))));
 
-         map1.place(cat);
+         map1.placeAnimal(cat);
+         map1.placeAnimal(tiger);
 
-         map1.move(cat);
+         map1.reproduce();
 
-       map1.animalTryToEatGrass(cat);
-         cat.checkIfDied();
-         map1.move(cat);
-         map1.animalTryToEatGrass(cat);
-         cat.checkIfDied();
-
-
+         for (Animal animal : map1.getAnimals()){
+             map1.move(animal);
+             map1.animalTryToEatGrass(animal);
+             map1.move(animal);
+             map1.animalTryToEatGrass(animal);
+         }
 
          System.out.println(map1);
     }

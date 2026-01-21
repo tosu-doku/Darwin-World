@@ -20,11 +20,15 @@ public class Animal implements WorldElement {
     private final int MOVE_ENERGY_COST = 5;
     private int energy;
 
-    public Animal(Vector2d position, ArrayList<Gene> genotype){
+    public Animal(Vector2d position, ArrayList<Gene> genotype, int energy){
         this.genotype = genotype;
         this.direction = MapDirection.NORTH;
         this.position = position;
-        this.energy = 50;
+        this.energy = energy;
+    }
+
+    public Animal(Vector2d position, ArrayList<Gene> genotype){
+        this(position,genotype,60);
     }
 
     public MapDirection getDirection() {
@@ -32,6 +36,18 @@ public class Animal implements WorldElement {
     }
 
     public int getEnergy() { return energy; }
+
+    public ArrayList<Gene> getGenotype() {
+        return genotype;
+    }
+
+    public boolean ableToReproduce(int energyRequired) {
+        return this.energy > energyRequired;
+    }
+
+    public void useEnergyToReproduce(int energyRequired) {
+        this.energy = this.energy - energyRequired;
+    }
 
     @Override
     public Vector2d getPosition() {
