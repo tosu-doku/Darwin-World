@@ -114,7 +114,7 @@ public class JungleMap implements WorldMap{
         for (ArrayList<Animal> candidates : animals.values()){
             if (!grasses.containsKey(candidates.getFirst().getPosition())) continue;
             candidates.sort(Animal.animalComparator);
-            Animal first = candidates.get(0);
+            Animal first = candidates.getFirst();
             first.increaseEnergy(ENERGY_FROM_EATING_GRASS_AMOUNT);
             grasses.remove(first.getPosition());
         }
