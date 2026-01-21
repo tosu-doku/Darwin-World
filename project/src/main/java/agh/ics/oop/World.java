@@ -1,7 +1,6 @@
 package agh.ics.oop;
 
 import agh.ics.oop.model.Animal;
-import agh.ics.oop.model.Gene;
 import agh.ics.oop.model.JungleMap;
 import agh.ics.oop.model.Vector2d;
 
@@ -9,8 +8,7 @@ import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class World {
      void main(){
@@ -22,8 +20,8 @@ public class World {
          System.out.println("Hello");
 
          JungleMap map1 = new JungleMap(10,10);
-         Animal cat = new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(0),new Gene(1))));
-         Animal tiger = new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(4),new Gene(7))));
+         Animal cat = new Animal(new Vector2d(2,2),60);
+         Animal tiger = new Animal(new Vector2d(2,2),60);
 
          map1.placeAnimal(cat);
          map1.placeAnimal(tiger);
@@ -32,11 +30,10 @@ public class World {
 
          for (Animal animal : map1.getAnimals()){
              map1.move(animal);
-             map1.animalTryToEatGrass(animal);
-             map1.move(animal);
-             map1.animalTryToEatGrass(animal);
+//
+             System.out.println(map1);
          }
+         map1.consumeGrass();
 
-         System.out.println(map1);
     }
 }

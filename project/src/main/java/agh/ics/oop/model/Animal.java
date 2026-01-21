@@ -1,6 +1,6 @@
 package agh.ics.oop.model;
 
-import java.util.Objects;
+import java.util.*;
 
 
 /**
@@ -14,36 +14,63 @@ public class Animal implements WorldElement {
     private boolean alive = true;
     private final int ENERGY_LIMIT = 100;
     private final int MOVE_ENERGY_COST = 5;
+    private final int REPRODUCE_ENERGY_COST = 25;
     private int energy;
+    private int age = 0;
+    private int childrenCount = 0;
+
+    public static Comparator<Animal> animalComparator = Comparator
+            .comparingInt(Animal::getEnergy)
+            .thenComparingInt(Animal::getAge)
+            .thenComparingInt(Animal::getEnergy)
+            .reversed(); // dorobic losowanie?
+
 
     public Animal(Vector2d position, int energy){
-        this.genotype = new Genotype(5);
+        this(position,energy, new Genotype(5));
+    }
+
+    public Animal(Vector2d position, int energy, Genotype genotype){
         this.direction = MapDirection.NORTH;
         this.position = position;
         this.energy = energy;
-    }
-
-    public Animal(Vector2d position){
-        this(position,60);
-
+        this.genotype = genotype;
     }
 
     public MapDirection getDirection() {
         return this.direction;
     }
 
-    public int getEnergy() { return energy; }
-
-    public Genotype getGenotype() {
-        return genotype;
+    public int getEnergy() {
+        return energy;
     }
 
-    public boolean ableToReproduce(int energyRequired) {
-        return this.energy > energyRequired;
+    public List<Gene> getGenotype() {
+        return genotype.getGenotype();
     }
 
-    public void useEnergyToReproduce(int energyRequired) {
-        this.energy = this.energy - energyRequired;
+    public int getAge(){
+        return this.age;
+    }
+
+    public int getChildrenCount(){
+        return this.childrenCount;
+    }
+
+    public void decreaseEnergy(int delta){
+        this.energy = Math.max(0,this.energy-delta);
+    }
+
+    public void increaseEnergy(int delta){
+        this.energy = Math.min(ENERGY_LIMIT, this.energy+delta);
+    }
+
+    public void increaseAge(){
+        this.age+=1;
+    }
+
+    public void increaseChildrenCount(){
+        this.childrenCount+=1;
     }
 
     @Override
@@ -94,9 +121,6 @@ public class Animal implements WorldElement {
             this.alive = false;
     }
 
-    public void restoreEnergy(int amount){
-        this.energy = Math.min(this.energy + amount,ENERGY_LIMIT);
-    }
 
     @Override
     public String toString(){
@@ -106,6 +130,44 @@ public class Animal implements WorldElement {
             return "X";
         }
     }
+
+    public Animal reproduce(Animal otherParent){
+        Random r = new Random();
+        int totalEnergy = this.energy + otherParent.energy;
+        Animal stronger;
+        Animal weaker;
+        if(this.energy>=otherParent.energy){
+            stronger = this;
+            weaker = otherParent;
+        }
+        else {
+            stronger = otherParent;
+            weaker = this;
+        }
+        boolean strongerGenesOnLeft = r.nextBoolean();
+        int splitPoint = (int) Math.round((double) stronger.energy / totalEnergy * this.genotype.getGenotype().size());
+
+        List<Gene> childGenes = new ArrayList<>();
+        if (strongerGenesOnLeft) {
+            childGenes.addAll(stronger.getGenotype().subList(0, splitPoint));
+            childGenes.addAll(weaker.getGenotype().subList(splitPoint, weaker.getGenotype().size()));
+        } else {
+            int reversedSplitPoint = weaker.genotype.getGenotype().size() - splitPoint;
+            childGenes.addAll(weaker.getGenotype().subList(0, reversedSplitPoint));
+            childGenes.addAll(stronger.getGenotype().subList(reversedSplitPoint, stronger.getGenotype().size()));
+        }
+//        System.out.println(stronger.getGenotype());
+//        System.out.println(weaker.getGenotype());
+//        System.out.println(childGenes);
+        Genotype childGenotype = new Genotype(childGenes);
+        childGenotype.mutate();
+
+        int childEnergy = 2*REPRODUCE_ENERGY_COST;
+        this.decreaseEnergy(REPRODUCE_ENERGY_COST);
+        otherParent.decreaseEnergy(REPRODUCE_ENERGY_COST);
+        return new Animal(this.position, childEnergy, childGenotype);
+    }
+
 
     private String showDirection(MapDirection dir){
         return switch (dir){
