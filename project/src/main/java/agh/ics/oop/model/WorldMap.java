@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface WorldMap extends MoveValidator {
 
 
-    void place(Animal animal);
+    void placeAnimal(Animal animal);
 
     void move(Animal animal);
 

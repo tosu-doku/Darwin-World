@@ -25,8 +25,8 @@ public class World {
          Animal cat = new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(0),new Gene(1))));
          Animal tiger = new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(4),new Gene(7))));
 
-         map1.place(cat);
-         map1.place(tiger);
+         map1.placeAnimal(cat);
+         map1.placeAnimal(tiger);
 
          map1.reproduce();
 

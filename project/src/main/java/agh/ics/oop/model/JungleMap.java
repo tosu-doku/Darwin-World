@@ -86,9 +86,11 @@ public class JungleMap implements WorldMap{
     }
 
     @Override
-    public void place(Animal animal) {
+    public void placeAnimal(Animal animal) {
         if (!animals.containsKey(animal.getPosition())) {
-            animals.put(animal.getPosition(), new ArrayList<>());
+            animals.put(animal.getPosition(), new ArrayList<>(List.of(animal)));
+        } else {
+            animals.get(animal.getPosition()).add(animal);
         }
     }
 
@@ -103,7 +105,7 @@ public class JungleMap implements WorldMap{
                     animals.remove(pos);
                 }
                 animal.move(this);
-                place(animal);
+                placeAnimal(animal);
             }
         }
     }
@@ -137,7 +139,7 @@ public class JungleMap implements WorldMap{
         if(p1.ableToReproduce(REPRODUCE_ENERGY_LIMIT) && p2.ableToReproduce(REPRODUCE_ENERGY_LIMIT)){
             p1.useEnergyToReproduce(REPRODUCE_ENERGY_COST);
             p2.useEnergyToReproduce(REPRODUCE_ENERGY_COST);
-            place(new Animal(
+            placeAnimal(new Animal(
                 p1.getPosition(),
                 generateNewGenotype(p1.getGenotype(), p1.getEnergy(), p2.getGenotype(), p2.getEnergy()),
                 2*REPRODUCE_ENERGY_COST

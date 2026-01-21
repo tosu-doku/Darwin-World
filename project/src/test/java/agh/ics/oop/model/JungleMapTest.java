@@ -43,7 +43,7 @@ class JungleMapTest {
     @MethodSource("provideAnimalsForReproduceTesting")
     void reproduceIntegrationTests(JungleMap map, ArrayList<Animal> animalsForTest, int expectedAmountOfAnimals) {
         for(Animal animal : animalsForTest){
-            map.place(animal);
+            map.placeAnimal(animal);
         }
         map.reproduce();
         assertEquals(expectedAmountOfAnimals,map.getAnimals().size());
