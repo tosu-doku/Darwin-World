@@ -1,5 +1,6 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.World;
 import agh.ics.oop.model.util.MapVisualizer;
 
 import java.util.*;
@@ -163,24 +164,20 @@ public class JungleMap implements WorldMap{
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        for (WorldElement elem : objectAt(position)){
-            if(elem instanceof Animal){
-                return true;
-            }
-        }
-        return false;
+        return objectAt(position) instanceof WorldElement;
     }
 
     @Override
-    public List<? extends WorldElement> objectAt(Vector2d position) {
+    public WorldElement objectAt(Vector2d position) {
         if(animals.get(position)!=null){
-            return animals.get(position);
+            return animals.get(position)
+                .stream()
+                .max(Comparator.comparing(Animal::getEnergy))
+                .orElse(null);
         } else if(grasses.get(position)!=null){
-            return List.of(grasses.get(position));
+            return grasses.get(position);
         }
-        else {
-            return Collections.emptyList();
-        }
+        return null;
     }
 
     public ArrayList<Animal> getAnimals() {
