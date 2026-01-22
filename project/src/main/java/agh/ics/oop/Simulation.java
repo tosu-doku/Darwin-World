@@ -34,5 +34,6 @@ public class Simulation {
         System.out.printf("Current day: %d%n",this.day);
         System.out.println(map);
         this.day += 1;
+        map.placeGrass(config.GRASS_REGROW_AMOUNT());
     }
 }

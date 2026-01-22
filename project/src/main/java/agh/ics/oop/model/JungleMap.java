@@ -142,13 +142,14 @@ public class JungleMap implements WorldMap{
     }
 
 
-    private void placeGrass(int amount){
+    public void placeGrass(int amount){
         int highBoundX = mapBoundary.higherBoundary().x()+1;
         int highBoundY = mapBoundary.higherBoundary().y()+1;
         int lowBoundX = mapBoundary.lowerBoundary().x();
         int lowBoundY = mapBoundary.lowerBoundary().y();
+
         int totalMapSpace = (highBoundX-lowBoundX)*(highBoundY-lowBoundY);
-        amount = Math.min(amount, totalMapSpace);
+        amount = Math.min(amount, totalMapSpace - grasses.size());
         boolean reverse = amount > totalMapSpace / 2;
 
         if(reverse){
