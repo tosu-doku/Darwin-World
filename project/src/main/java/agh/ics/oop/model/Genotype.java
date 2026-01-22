@@ -28,7 +28,6 @@ public class Genotype {
     }
 
     public void mutate(){
-        //dodac for loop zeby wykonalo sie tyle razy ile config mowi
         Random r = new Random();
         int idx = r.nextInt(this.genotypeList.size());
         this.genotypeList.set(idx,Gene.getRandom());

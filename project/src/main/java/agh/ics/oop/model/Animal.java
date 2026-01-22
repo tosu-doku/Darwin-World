@@ -162,7 +162,11 @@ public class Animal implements WorldElement {
 //        System.out.println(weaker.getGenotype());
 //        System.out.println(childGenes);
         Genotype childGenotype = new Genotype(childGenes);
-        childGenotype.mutate();
+
+        int mutationAmount = r.nextInt(config.MAX_MUTATION_AMOUNT());
+        for(int i=0; i<mutationAmount; i++){
+            childGenotype.mutate();
+        }
 
         int childEnergy = 2*config.REPRODUCE_ENERGY_COST();
         this.decreaseEnergy(config.REPRODUCE_ENERGY_COST());

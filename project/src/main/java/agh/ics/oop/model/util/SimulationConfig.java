@@ -8,7 +8,7 @@ public record SimulationConfig(int mapWidth, int mapHeight,
        int START_ANIMAL_ENERGY,
        int ENERGY_LIMIT, int MOVE_ENERGY_COST,
        int REPRODUCE_ENERGY_LIMIT, int REPRODUCE_ENERGY_COST,
-       boolean IS_MODIFIER_ACTIVE) {
+       boolean IS_MODIFIER_ACTIVE, int MAX_MUTATION_AMOUNT) {
 
 
     // additional checks

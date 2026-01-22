@@ -32,7 +32,7 @@ public class World {
 //         }
 //         map1.consumeGrass();
 
-         Simulation simulation = new Simulation(new SimulationConfig(5,5,4,20,8,15,50,100,5,50,25,false));
+         Simulation simulation = new Simulation(new SimulationConfig(5,5,4,20,8,15,50,100,5,50,25,false,3));
          for(int i=0; i<20; i++) {
              simulation.run();
          }
