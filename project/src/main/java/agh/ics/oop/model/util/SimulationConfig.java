@@ -1,0 +1,16 @@
+package agh.ics.oop.model.util;
+
+import agh.ics.oop.model.JungleMap;
+
+public record SimulationConfig(JungleMap map,
+       int START_ANIMAL_AMOUNT, int START_GRASS_AMOUNT,
+       int GENOTYPE_LENGTH, int ENERGY_FROM_EATING_GRASS_AMOUNT,
+       int ENERGY_LIMIT, int MOVE_ENERGY_COST,
+       int REPRODUCE_ENERGY_LIMIT, int REPRODUCE_ENERGY_COST,
+       boolean IS_MODIFIER_ACTIVE) {
+
+    SimulationConfig(int START_ANIMAL_AMOUNT, int START_GRASS_AMOUNT, int GENOTYPE_LENGTH, int ENERGY_FROM_EATING_GRASS_AMOUNT, int ENERGY_LIMIT, int MOVE_ENERGY_COST, int REPRODUCE_ENERGY_LIMIT, int REPRODUCE_ENERGY_COST, boolean IS_MODIFIER_ACTIVE, int width, int height){
+        JungleMap map = new JungleMap(width,height);
+        this(map, START_ANIMAL_AMOUNT, START_GRASS_AMOUNT, GENOTYPE_LENGTH, ENERGY_FROM_EATING_GRASS_AMOUNT, ENERGY_LIMIT, MOVE_ENERGY_COST, REPRODUCE_ENERGY_LIMIT, REPRODUCE_ENERGY_COST, IS_MODIFIER_ACTIVE);
+    }
+}

@@ -1,9 +1,5 @@
 package agh.ics.oop;
 
-import agh.ics.oop.model.Animal;
-import agh.ics.oop.model.JungleMap;
-import agh.ics.oop.model.Vector2d;
-
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -19,21 +15,24 @@ public class World {
          }
          System.out.println("Hello");
 
-         JungleMap map1 = new JungleMap(10,10);
-         Animal cat = new Animal(new Vector2d(2,2),60);
-         Animal tiger = new Animal(new Vector2d(2,2),60);
-
-         map1.placeAnimal(cat);
-         map1.placeAnimal(tiger);
-
-         map1.reproduce();
-
-         for (Animal animal : map1.getAnimals()){
-             map1.move(animal);
+//         JungleMap map1 = new JungleMap(10,10);
+//         Animal cat = new Animal(new Vector2d(2,2),60);
+//         Animal tiger = new Animal(new Vector2d(2,2),60);
 //
-             System.out.println(map1);
-         }
-         map1.consumeGrass();
+//         map1.placeAnimal(cat);
+//         map1.placeAnimal(tiger);
+//
+//         map1.reproduce();
+//
+//         for (Animal animal : map1.getAnimals()){
+//             map1.move(animal);
+//             System.out.println(map1);
+//         }
+//         map1.consumeGrass();
 
+         Simulation simulation = new Simulation(3,30,4,10,100,5,50,25,false,5,5,50);
+         for(int i=0; i<20; i++) {
+             simulation.run();
+         }
     }
 }
