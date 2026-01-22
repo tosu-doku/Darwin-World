@@ -11,11 +11,15 @@ public record SimulationConfig(int mapWidth, int mapHeight,
        boolean IS_MODIFIER_ACTIVE, int MAX_MUTATION_AMOUNT) {
 
 
-    // additional checks
-//            if(startAnimalAmount<0 || START_GRASS_AMOUNT<0 || GENOTYPE_LENGTH<0 || ENERGY_FROM_EATING_GRASS_AMOUNT<0 || ENERGY_LIMIT<0 || MOVE_ENERGY_COST<0 || REPRODUCE_ENERGY_COST<0 || REPRODUCE_ENERGY_LIMIT<0 || width<0 || height<0 || startAnimalEnergy<0){
-//        throw new IllegalArgumentException("negative values are not allowed");
-
-//            if(!(width>=2 && height>=2)){
-//        throw new IllegalArgumentException("please provide a larger map size (minimum 2x2)");
-//    }
+        public SimulationConfig{
+            if(START_ANIMAL_AMOUNT<0 || START_GRASS_AMOUNT<0 || GENOTYPE_LENGTH<0 || ENERGY_FROM_EATING_GRASS_AMOUNT<0 || ENERGY_LIMIT<0 || MOVE_ENERGY_COST<0 || REPRODUCE_ENERGY_COST<0 || REPRODUCE_ENERGY_LIMIT<0 || mapWidth<0 || mapHeight<0 || START_ANIMAL_ENERGY<0 || GRASS_REGROW_AMOUNT<0) {
+                throw new IllegalArgumentException("negative values are not allowed");
+            }
+            if(!(mapWidth>=2 && mapHeight>=2)) {
+                throw new IllegalArgumentException("please provide a larger map size (minimum 2x2)");
+            }
+            if(REPRODUCE_ENERGY_COST > REPRODUCE_ENERGY_LIMIT) {
+                throw new IllegalArgumentException("reproduction not possible energy limit > energy cost");
+            }
+    }
 }
