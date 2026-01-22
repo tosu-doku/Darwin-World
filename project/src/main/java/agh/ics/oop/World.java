@@ -1,6 +1,7 @@
 package agh.ics.oop;
 
 import agh.ics.oop.model.Animal;
+import agh.ics.oop.model.ConsoleMapDisplay;
 import agh.ics.oop.model.JungleMap;
 import agh.ics.oop.model.Vector2d;
 
@@ -20,6 +21,7 @@ public class World {
          System.out.println("Hello");
 
          JungleMap map1 = new JungleMap(10,10);
+         map1.registerListener(new ConsoleMapDisplay());
          Animal cat = new Animal(new Vector2d(2,2),60);
          Animal tiger = new Animal(new Vector2d(2,2),60);
 
@@ -30,8 +32,48 @@ public class World {
 
          for (Animal animal : map1.getAnimals()){
              map1.move(animal);
-//
-             System.out.println(map1);
+         }
+         map1.consumeGrass();
+         for (Animal animal : map1.getAnimals()){
+             map1.move(animal);
+         }
+         map1.consumeGrass();
+         for (Animal animal : map1.getAnimals()){
+             map1.move(animal);
+         }
+         map1.consumeGrass();
+         for (Animal animal : map1.getAnimals()){
+             map1.move(animal);
+
+         }
+         map1.consumeGrass();
+         for (Animal animal : map1.getAnimals()){
+             map1.move(animal);
+         }
+         map1.consumeGrass();
+         for (Animal animal : map1.getAnimals()){
+             map1.move(animal);
+
+         }
+         map1.consumeGrass();
+         for (Animal animal : map1.getAnimals()){
+             map1.move(animal);
+
+         }
+         map1.consumeGrass();
+         for (Animal animal : map1.getAnimals()){
+             map1.move(animal);
+
+         }
+         map1.consumeGrass();
+         for (Animal animal : map1.getAnimals()){
+             map1.move(animal);
+
+         }
+         map1.consumeGrass();
+         for (Animal animal : map1.getAnimals()){
+             map1.move(animal);
+
          }
          map1.consumeGrass();
 
