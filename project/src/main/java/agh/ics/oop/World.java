@@ -1,5 +1,7 @@
 package agh.ics.oop;
 
+import agh.ics.oop.model.util.SimulationConfig;
+
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -30,7 +32,7 @@ public class World {
 //         }
 //         map1.consumeGrass();
 
-         Simulation simulation = new Simulation(3,30,4,10,100,5,50,25,false,5,5,50);
+         Simulation simulation = new Simulation(new SimulationConfig(5,5,4,20,8,15,50,100,5,50,25,false));
          for(int i=0; i<20; i++) {
              simulation.run();
          }

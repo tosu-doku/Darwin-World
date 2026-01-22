@@ -1,5 +1,7 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.model.util.SimulationConfig;
+
 import java.util.*;
 
 
@@ -12,12 +14,11 @@ public class Animal implements WorldElement {
     private MapDirection direction;
     private Vector2d position;
     private boolean alive = true;
-    private final int ENERGY_LIMIT = 100;
-    private final int MOVE_ENERGY_COST = 5;
-    private final int REPRODUCE_ENERGY_COST = 25;
     private int energy;
     private int age = 0;
     private int childrenCount = 0;
+
+    private final SimulationConfig config;
 
     public static Comparator<Animal> animalComparator = Comparator
             .comparingInt(Animal::getEnergy)
@@ -26,11 +27,12 @@ public class Animal implements WorldElement {
             .reversed(); // dorobic losowanie?
 
 
-    public Animal(Vector2d position, int energy){
-        this(position,energy, new Genotype(5));
+    public Animal(SimulationConfig config, Vector2d position, int energy){
+        this(config, position,energy, new Genotype(5));
     }
 
-    public Animal(Vector2d position, int energy, Genotype genotype){
+    public Animal(SimulationConfig config, Vector2d position, int energy, Genotype genotype){
+        this.config = config;
         this.direction = MapDirection.NORTH;
         this.position = position;
         this.energy = energy;
@@ -62,7 +64,7 @@ public class Animal implements WorldElement {
     }
 
     public void increaseEnergy(int delta){
-        this.energy = Math.min(ENERGY_LIMIT, this.energy+delta);
+        this.energy = Math.min(config.ENERGY_LIMIT(), this.energy+delta);
     }
 
     public void increaseAge(){
@@ -111,7 +113,7 @@ public class Animal implements WorldElement {
             this.direction = directionToMove;
 
             this.genotype.incrementIndex();
-            this.energy -= MOVE_ENERGY_COST;
+            this.energy -= config.MOVE_ENERGY_COST();
             this.checkIfDied();
         }
     }
@@ -162,10 +164,10 @@ public class Animal implements WorldElement {
         Genotype childGenotype = new Genotype(childGenes);
         childGenotype.mutate();
 
-        int childEnergy = 2*REPRODUCE_ENERGY_COST;
-        this.decreaseEnergy(REPRODUCE_ENERGY_COST);
-        otherParent.decreaseEnergy(REPRODUCE_ENERGY_COST);
-        return new Animal(this.position, childEnergy, childGenotype);
+        int childEnergy = 2*config.REPRODUCE_ENERGY_COST();
+        this.decreaseEnergy(config.REPRODUCE_ENERGY_COST());
+        otherParent.decreaseEnergy(config.REPRODUCE_ENERGY_COST());
+        return new Animal(this.config, this.position, childEnergy, childGenotype);
     }
 
 
