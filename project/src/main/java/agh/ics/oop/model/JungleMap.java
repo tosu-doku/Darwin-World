@@ -3,22 +3,24 @@ package agh.ics.oop.model;
 import agh.ics.oop.model.util.MapVisualizer;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static agh.ics.oop.model.util.GenerateNewGenotype.generateNewGenotype;
-import static java.util.stream.Collectors.toMap;
 
 public class JungleMap implements WorldMap{
-    private final Map<Vector2d, ArrayList<WorldElement>> map = new HashMap<>();
+    private Map<Vector2d,  ArrayList<Animal>> animals = new HashMap<>();
+    private Map<Vector2d, Grass> grasses = new HashMap<>();
+    private final List<MapChangeListener> listeners = new ArrayList<>();
+
     private final UUID mapId = UUID.randomUUID();
     private final Boundary mapBoundary;
     private final Boundary jungleBoundary;
-    private Map<Vector2d,  ArrayList<Animal>> animals = new HashMap<>();
+
     private final MapVisualizer visualizer = new MapVisualizer(this);
-    private Map<Vector2d, Grass> grasses = new HashMap<>();
-    private final int START_GRASS_AMOUNT = 500;
+
+    private final int START_GRASS_AMOUNT = 20;
     private final int ENERGY_FROM_EATING_GRASS_AMOUNT = 10;
     private final int REPRODUCE_ENERGY_LIMIT = 51;
-    private final int REPRODUCE_ENERGY_COST = 25;
+
 
     public JungleMap(int width, int height){
         this.mapBoundary = new Boundary(new Vector2d(0,0),new Vector2d(width-1,height-1));
@@ -44,6 +46,7 @@ public class JungleMap implements WorldMap{
         } else {
             animals.get(animal.getPosition()).add(animal);
         }
+
     }
 
     @Override
@@ -58,6 +61,14 @@ public class JungleMap implements WorldMap{
                 }
                 animal.move(this);
                 placeAnimal(animal);
+                this.mapChanged(String.format(
+                        "Animal moved: (%d,%d) -> (%d,%d); Energy: %s",
+                        pos.x(),
+                        pos.y(),
+                        animal.getPosition().x(),
+                        animal.getPosition().y(),
+                        animal.getEnergy()
+                ));
             }
         }
     }
@@ -89,14 +100,6 @@ public class JungleMap implements WorldMap{
         return allAnimals;
     }
 
-    @Override
-    public List<WorldElement> getElements() {
-        ArrayList<WorldElement> elements = new ArrayList<>();
-        for (Vector2d pos : map.keySet()){
-            elements.addAll(map.get(pos));
-        }
-        return elements;
-    }
 
     @Override
     public Boundary getMapBoundary() {
@@ -105,46 +108,61 @@ public class JungleMap implements WorldMap{
 
     @Override
     public UUID getId() {
-        return null;
+        return this.mapId;
     }
 
-    public void animalTryToEatGrass(Animal animal) {
-        if(grasses.containsKey(animal.getPosition())){
-            animal.restoreEnergy(ENERGY_FROM_EATING_GRASS_AMOUNT);
-            grasses.remove(animal.getPosition());
+    public void consumeGrass() {
+        for (ArrayList<Animal> candidates : animals.values()){
+            if (!grasses.containsKey(candidates.getFirst().getPosition())) continue;
+            candidates.sort(Animal.animalComparator);
+            Animal first = candidates.getFirst();
+            first.increaseEnergy(ENERGY_FROM_EATING_GRASS_AMOUNT);
+            grasses.remove(first.getPosition());
         }
     }
 
     public void reproduce(){
-        Map<Vector2d, ArrayList<Animal>> multipleAnimals = animals
-            .entrySet()
-            .stream()
-            .filter(elem -> elem.getValue().size() > 1)
-            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+        List<Animal> newborns = new ArrayList<>();
+        for (ArrayList<Animal> candidates : animals.values()){
+            if (candidates.size()<2) continue;
+            candidates.sort(Animal.animalComparator);
+            Animal firstParent = candidates.get(0);
+            Animal secondParent = candidates.get(1);
 
-        for (ArrayList<Animal> parents : multipleAnimals.values()){
-            for (int i=0; i<parents.size(); i++){
-                for (int j=i+1; j<parents.size(); j++){
-                    var p1 = parents.get(i);
-                    var p2 = parents.get(j);
-                    reproduceFinalize(p1, p2);
-                }
+            if (firstParent.getEnergy()>REPRODUCE_ENERGY_LIMIT && secondParent.getEnergy()>REPRODUCE_ENERGY_LIMIT) {
+                Animal child = firstParent.reproduce(secondParent);
+                firstParent.increaseChildrenCount();
+                secondParent.increaseChildrenCount();
+
+                newborns.add(child);
             }
         }
-    }
-
-    private void reproduceFinalize(Animal p1, Animal p2) {
-        if(p1.ableToReproduce(REPRODUCE_ENERGY_LIMIT) && p2.ableToReproduce(REPRODUCE_ENERGY_LIMIT)){
-            p1.useEnergyToReproduce(REPRODUCE_ENERGY_COST);
-            p2.useEnergyToReproduce(REPRODUCE_ENERGY_COST);
-            placeAnimal(new Animal(
-                p1.getPosition(),
-                generateNewGenotype(p1.getGenotype(), p1.getEnergy(), p2.getGenotype(), p2.getEnergy()),
-                2*REPRODUCE_ENERGY_COST
-                ));
-            System.out.printf("New animal born at: %s%n",p1.getPosition());
+        for (Animal child : newborns) {
+            this.placeAnimal(child);
+            this.mapChanged(String.format(
+                    "New animal has been born on (%d,%d) facing %s",
+                    child.getPosition().x(),
+                    child.getPosition().y(),
+                    child.getDirection()
+            ));
         }
     }
+
+    public void removeDead(){
+        List<Vector2d> positionsToRemove = new ArrayList<>();
+
+        for (Vector2d pos : animals.keySet()) {
+            ArrayList<Animal> animalList = animals.get(pos);
+            animalList.removeIf(animal -> animal.getEnergy() <= 0);
+            if (animalList.isEmpty()) {
+                positionsToRemove.add(pos);
+            }
+        }
+        for (Vector2d pos : positionsToRemove) {
+            animals.remove(pos);
+        }
+    }
+
 
     private void placeGrass(int amount){
         int highBoundX = mapBoundary.higherBoundary().x()+1;
@@ -192,5 +210,17 @@ public class JungleMap implements WorldMap{
         } else {
             placeSingularGrass(reverse);
         }
+    }
+
+    public void registerListener(MapChangeListener listener){
+        this.listeners.add(listener);
+    }
+
+    public void removeListener(MapChangeListener listener){
+        this.listeners.remove(listener);
+    }
+
+    private void mapChanged(String message){
+        this.listeners.forEach(listener -> listener.mapChanged(this,message));
     }
 }
