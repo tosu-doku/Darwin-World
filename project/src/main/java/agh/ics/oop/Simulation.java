@@ -4,6 +4,7 @@ import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.SimulationConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Simulation {
@@ -43,11 +44,46 @@ public class Simulation {
 
             map.placeGrass(config.GRASS_REGROW_AMOUNT());
             map.removeDead();
-            this.day += 1;
 
             this.animalList = new ArrayList<>(map.getAnimals().stream().filter(animal -> animal.getEnergy()>0).toList());
+            if(config.IS_MODIFIER_ACTIVE())
+                checkFOMO();
             System.out.println(map);
+            this.day += 1;
         }
+    }
 
+    private void checkFOMO(){
+//        this.animalList.sort(Comparator
+//                .comparingInt((Animal animal) -> animal.getPosition().x())
+//                .thenComparing((Animal animal) -> animal.getPosition().y()));
+        for(int i=0; i<animalList.size(); i++){
+            IO.println(animalList.get(i).getPosition());
+            int count_inside_fomo = 0;
+            for(int j=0; j<animalList.size(); j++){
+                if(Math.abs(animalList.get(i).getPosition().x()-animalList.get(j).getPosition().x())<config.FOMO_RADIUS_INSIDE()
+                && Math.abs(animalList.get(i).getPosition().y()-animalList.get(j).getPosition().y())<config.FOMO_RADIUS_INSIDE()){
+                    count_inside_fomo += 1;
+                    if(count_inside_fomo >= config.AMOUNT_TO_TRIGGER_FOMO()){
+                        triggerFOMO(animalList.get(i).getPosition());
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    private void triggerFOMO(Vector2d pos){
+        System.out.printf("FOMO triggered at:%s%n",pos);
+        for (Animal animal : animalList){
+            if(!(Math.abs(animal.getPosition().x()-pos.x())<config.FOMO_RADIUS_INSIDE()
+                    && Math.abs(animal.getPosition().y()-pos.y())<config.FOMO_RADIUS_INSIDE()))
+            {
+                if(Math.abs(animal.getPosition().x()-pos.x())<config.FOMO_RADIUS_OUTSIDE()
+                        && Math.abs(animal.getPosition().y()-pos.y())<config.FOMO_RADIUS_OUTSIDE())
+                {
+                    animal.triggerFOMO(pos);
+                }
+            }
+        }
     }
 }
