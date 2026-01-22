@@ -1,9 +1,6 @@
 package agh.ics.oop;
 
-import agh.ics.oop.model.Animal;
-import agh.ics.oop.model.ConsoleMapDisplay;
-import agh.ics.oop.model.JungleMap;
-import agh.ics.oop.model.Vector2d;
+import agh.ics.oop.model.util.SimulationConfig;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
@@ -20,62 +17,29 @@ public class World {
          }
          System.out.println("Hello");
 
-         JungleMap map1 = new JungleMap(10,10);
-         map1.registerListener(new ConsoleMapDisplay());
-         Animal cat = new Animal(new Vector2d(2,2),60);
-         Animal tiger = new Animal(new Vector2d(2,2),60);
+//         JungleMap map1 = new JungleMap(10,10);
+//         Animal cat = new Animal(new Vector2d(2,2),60);
+//         Animal tiger = new Animal(new Vector2d(2,2),60);
+//
+//         map1.placeAnimal(cat);
+//         map1.placeAnimal(tiger);
+//
+//         map1.reproduce();
+//
+//         for (Animal animal : map1.getAnimals()){
+//             map1.move(animal);
+//             System.out.println(map1);
+//         }
+//         map1.consumeGrass();
 
-         map1.placeAnimal(cat);
-         map1.placeAnimal(tiger);
-
-         map1.reproduce();
-
-         for (Animal animal : map1.getAnimals()){
-             map1.move(animal);
+         try {
+             Simulation simulation = new Simulation(new SimulationConfig(5, 5, 4, 20, 8, 15, 50, 100, 5, 50, 25, false, 3, 2));
+             for (int i = 0; i < 20; i++) {
+                 simulation.run();
+             }
          }
-         map1.consumeGrass();
-         for (Animal animal : map1.getAnimals()){
-             map1.move(animal);
+         catch (IllegalArgumentException e){
+             e.printStackTrace();
          }
-         map1.consumeGrass();
-         for (Animal animal : map1.getAnimals()){
-             map1.move(animal);
-         }
-         map1.consumeGrass();
-         for (Animal animal : map1.getAnimals()){
-             map1.move(animal);
-
-         }
-         map1.consumeGrass();
-         for (Animal animal : map1.getAnimals()){
-             map1.move(animal);
-         }
-         map1.consumeGrass();
-         for (Animal animal : map1.getAnimals()){
-             map1.move(animal);
-
-         }
-         map1.consumeGrass();
-         for (Animal animal : map1.getAnimals()){
-             map1.move(animal);
-
-         }
-         map1.consumeGrass();
-         for (Animal animal : map1.getAnimals()){
-             map1.move(animal);
-
-         }
-         map1.consumeGrass();
-         for (Animal animal : map1.getAnimals()){
-             map1.move(animal);
-
-         }
-         map1.consumeGrass();
-         for (Animal animal : map1.getAnimals()){
-             map1.move(animal);
-
-         }
-         map1.consumeGrass();
-
     }
 }

@@ -1,6 +1,7 @@
 package agh.ics.oop.model;
 
 import agh.ics.oop.model.util.MapVisualizer;
+import agh.ics.oop.model.util.SimulationConfig;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,16 +18,15 @@ public class JungleMap implements WorldMap{
 
     private final MapVisualizer visualizer = new MapVisualizer(this);
 
-    private final int START_GRASS_AMOUNT = 20;
-    private final int ENERGY_FROM_EATING_GRASS_AMOUNT = 10;
-    private final int REPRODUCE_ENERGY_LIMIT = 51;
+    private final SimulationConfig config;
 
+    public JungleMap(SimulationConfig config){
+        this.config = config;
 
-    public JungleMap(int width, int height){
-        this.mapBoundary = new Boundary(new Vector2d(0,0),new Vector2d(width-1,height-1));
-        int offsetY = (int) (height*0.3);
-        this.jungleBoundary = new Boundary(new Vector2d(0,offsetY),new Vector2d(width-1,height-offsetY-1));
-        placeGrass(START_GRASS_AMOUNT);
+        this.mapBoundary = new Boundary(new Vector2d(0,0),new Vector2d(config.mapWidth()-1,config.mapHeight()-1));
+        int offsetY = (int) (config.mapHeight()*0.3);
+        this.jungleBoundary = new Boundary(new Vector2d(0,offsetY),new Vector2d(config.mapWidth()-1,config.mapHeight()-offsetY-1));
+        placeGrass(config.START_GRASS_AMOUNT());
     }
 
     @Override
@@ -116,7 +116,7 @@ public class JungleMap implements WorldMap{
             if (!grasses.containsKey(candidates.getFirst().getPosition())) continue;
             candidates.sort(Animal.animalComparator);
             Animal first = candidates.getFirst();
-            first.increaseEnergy(ENERGY_FROM_EATING_GRASS_AMOUNT);
+            first.increaseEnergy(config.ENERGY_FROM_EATING_GRASS_AMOUNT());
             grasses.remove(first.getPosition());
         }
     }
@@ -129,7 +129,7 @@ public class JungleMap implements WorldMap{
             Animal firstParent = candidates.get(0);
             Animal secondParent = candidates.get(1);
 
-            if (firstParent.getEnergy()>REPRODUCE_ENERGY_LIMIT && secondParent.getEnergy()>REPRODUCE_ENERGY_LIMIT) {
+            if (firstParent.getEnergy()>config.REPRODUCE_ENERGY_LIMIT() && secondParent.getEnergy()>config.REPRODUCE_ENERGY_LIMIT()) {
                 Animal child = firstParent.reproduce(secondParent);
                 firstParent.increaseChildrenCount();
                 secondParent.increaseChildrenCount();
@@ -164,13 +164,14 @@ public class JungleMap implements WorldMap{
     }
 
 
-    private void placeGrass(int amount){
+    public void placeGrass(int amount){
         int highBoundX = mapBoundary.higherBoundary().x()+1;
         int highBoundY = mapBoundary.higherBoundary().y()+1;
         int lowBoundX = mapBoundary.lowerBoundary().x();
         int lowBoundY = mapBoundary.lowerBoundary().y();
+
         int totalMapSpace = (highBoundX-lowBoundX)*(highBoundY-lowBoundY);
-        amount = Math.min(amount, totalMapSpace);
+        amount = Math.min(amount, totalMapSpace - grasses.size());
         boolean reverse = amount > totalMapSpace / 2;
 
         if(reverse){
