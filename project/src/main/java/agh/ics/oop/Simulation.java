@@ -10,6 +10,7 @@ public class Simulation {
     private final SimulationConfig config;
 
     JungleMap map;
+    private int day = 0;
 
     public Simulation(SimulationConfig config)
     {
@@ -30,6 +31,8 @@ public class Simulation {
 
         map.consumeGrass();
         map.reproduce();
+        System.out.printf("Current day: %d%n",this.day);
         System.out.println(map);
+        this.day += 1;
     }
 }
