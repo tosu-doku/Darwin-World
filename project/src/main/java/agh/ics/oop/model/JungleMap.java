@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public class JungleMap implements WorldMap{
     private Map<Vector2d,  ArrayList<Animal>> animals = new HashMap<>();
     private Map<Vector2d, Grass> grasses = new HashMap<>();
+    private final List<MapChangeListener> listeners = new ArrayList<>();
 
     private final UUID mapId = UUID.randomUUID();
     private final Boundary mapBoundary;
@@ -45,6 +46,7 @@ public class JungleMap implements WorldMap{
         } else {
             animals.get(animal.getPosition()).add(animal);
         }
+
     }
 
     @Override
@@ -59,6 +61,14 @@ public class JungleMap implements WorldMap{
                 }
                 animal.move(this);
                 placeAnimal(animal);
+                this.mapChanged(String.format(
+                        "Animal moved: (%d,%d) -> (%d,%d); Energy: %s",
+                        pos.x(),
+                        pos.y(),
+                        animal.getPosition().x(),
+                        animal.getPosition().y(),
+                        animal.getEnergy()
+                ));
             }
         }
     }
@@ -90,15 +100,6 @@ public class JungleMap implements WorldMap{
         return allAnimals;
     }
 
-    @Override
-    public List<WorldElement> getElements() {
-//        ArrayList<WorldElement> elements = new ArrayList<>();
-//        for (Vector2d pos : map.keySet()){
-//            elements.addAll(map.get(pos));
-//        }
-//        return elements;
-        return null;
-    }
 
     @Override
     public Boundary getMapBoundary() {
@@ -107,7 +108,7 @@ public class JungleMap implements WorldMap{
 
     @Override
     public UUID getId() {
-        return null;
+        return this.mapId;
     }
 
     public void consumeGrass() {
@@ -138,6 +139,27 @@ public class JungleMap implements WorldMap{
         }
         for (Animal child : newborns) {
             this.placeAnimal(child);
+            this.mapChanged(String.format(
+                    "New animal has been born on (%d,%d) facing %s",
+                    child.getPosition().x(),
+                    child.getPosition().y(),
+                    child.getDirection()
+            ));
+        }
+    }
+
+    public void removeDead(){
+        List<Vector2d> positionsToRemove = new ArrayList<>();
+
+        for (Vector2d pos : animals.keySet()) {
+            ArrayList<Animal> animalList = animals.get(pos);
+            animalList.removeIf(animal -> animal.getEnergy() <= 0);
+            if (animalList.isEmpty()) {
+                positionsToRemove.add(pos);
+            }
+        }
+        for (Vector2d pos : positionsToRemove) {
+            animals.remove(pos);
         }
     }
 
@@ -189,5 +211,17 @@ public class JungleMap implements WorldMap{
         } else {
             placeSingularGrass(reverse);
         }
+    }
+
+    public void registerListener(MapChangeListener listener){
+        this.listeners.add(listener);
+    }
+
+    public void removeListener(MapChangeListener listener){
+        this.listeners.remove(listener);
+    }
+
+    private void mapChanged(String message){
+        this.listeners.forEach(listener -> listener.mapChanged(this,message));
     }
 }

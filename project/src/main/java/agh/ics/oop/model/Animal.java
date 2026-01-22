@@ -90,8 +90,8 @@ public class Animal implements WorldElement {
             MapDirection directionToMove = genotype.getNewDirection(this.direction);
             Vector2d posAfterMove = this.position.add(directionToMove.toVector());
             if (moveValidator.isInBounds(posAfterMove)){
-                System.out.println(String.format("%s -> %s, (%s -> %s)",
-                        this.position, posAfterMove, this.direction, directionToMove));
+//                System.out.println(String.format("%s -> %s, (%s -> %s)",
+//                        this.position, posAfterMove, this.direction, directionToMove));
             } else {
                 Vector2d maxBound = moveValidator.getMapBoundary().higherBoundary();
                 if(!moveValidator.isInBounds(this.position.add(new Vector2d(directionToMove.toVector().x(), 0)))){
