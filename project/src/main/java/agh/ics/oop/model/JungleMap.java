@@ -51,6 +51,7 @@ public class JungleMap implements WorldMap{
 
     @Override
     public void move(Animal animal) {
+        if (animal.getEnergy()<=0) return;
         Vector2d pos = animal.getPosition();
         if (animals.containsKey(pos)) {
             ArrayList<Animal> animalListAtPos = animals.get(pos);
