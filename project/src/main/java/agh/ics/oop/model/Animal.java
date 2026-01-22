@@ -13,7 +13,6 @@ public class Animal implements WorldElement {
     private final Genotype genotype;
     private MapDirection direction;
     private Vector2d position;
-    private boolean alive = true;
     private int energy;
     private int age = 0;
     private int childrenCount = 0;
@@ -28,7 +27,7 @@ public class Animal implements WorldElement {
 
 
     public Animal(SimulationConfig config, Vector2d position, int energy){
-        this(config, position,energy, new Genotype(5));
+        this(config, position,energy, new Genotype(config));
     }
 
     public Animal(SimulationConfig config, Vector2d position, int energy, Genotype genotype){
@@ -86,7 +85,7 @@ public class Animal implements WorldElement {
     }
 
     public void move(MoveValidator moveValidator){
-        if(alive){
+        if(this.energy>0){
             MapDirection directionToMove = genotype.getNewDirection(this.direction);
             Vector2d posAfterMove = this.position.add(directionToMove.toVector());
             if (moveValidator.isInBounds(posAfterMove)){
@@ -113,20 +112,14 @@ public class Animal implements WorldElement {
             this.direction = directionToMove;
 
             this.genotype.incrementIndex();
-            this.energy -= config.MOVE_ENERGY_COST();
-            this.checkIfDied();
-        }
-    }
 
-    public void checkIfDied() {
-        if(this.energy<=0)
-            this.alive = false;
+        }
     }
 
 
     @Override
     public String toString(){
-        if(alive){
+        if(this.getEnergy()>0){
             return showDirection(this.direction);
         } else {
             return "X";
@@ -161,7 +154,7 @@ public class Animal implements WorldElement {
 //        System.out.println(stronger.getGenotype());
 //        System.out.println(weaker.getGenotype());
 //        System.out.println(childGenes);
-        Genotype childGenotype = new Genotype(childGenes);
+        Genotype childGenotype = new Genotype(config,childGenes);
 
         int mutationAmount = r.nextInt(config.MAX_MUTATION_AMOUNT());
         for(int i=0; i<mutationAmount; i++){

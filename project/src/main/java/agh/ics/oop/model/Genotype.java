@@ -1,21 +1,28 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.model.util.SimulationConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Genotype {
-    List<Gene> genotypeList = new ArrayList<>();
-    int currentGeneIndex;
+    private List<Gene> genotypeList = new ArrayList<>();
+    private int currentGeneIndex = 0;
+    private final int mutationsAmount;
 
-    public Genotype(int length){
-        for (int i = 0; i < length; i++) {
+    public Genotype(SimulationConfig config){
+        this.mutationsAmount = config.MAX_MUTATION_AMOUNT();
+        for (int i = 0; i < config.GENOTYPE_LENGTH(); i++) {
             genotypeList.add(Gene.getRandom());
         }
     }
-
-    public Genotype(List<Gene> list){
+    // for creating children
+    public Genotype(SimulationConfig config, List<Gene> list){
+        this.mutationsAmount = config.MAX_MUTATION_AMOUNT();
         this.genotypeList = list;
+        Random r = new Random();
+        this.currentGeneIndex = r.nextInt(genotypeList.size());
     }
 
     public MapDirection getNewDirection(MapDirection currentDirection) {
@@ -29,8 +36,10 @@ public class Genotype {
 
     public void mutate(){
         Random r = new Random();
-        int idx = r.nextInt(this.genotypeList.size());
-        this.genotypeList.set(idx,Gene.getRandom());
+        for(int i=0;i<mutationsAmount;i++) {
+            int idx = r.nextInt(this.genotypeList.size());
+            this.genotypeList.set(idx, Gene.getRandom());
+        }
     }
 
     public List<Gene> getGenotype(){

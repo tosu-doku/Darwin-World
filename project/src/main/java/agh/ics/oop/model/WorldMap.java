@@ -19,4 +19,14 @@ public interface WorldMap extends MoveValidator {
     Boundary getMapBoundary();
 
     UUID getId();
+
+    List<Animal> getAnimals();
+
+    void reproduce();
+
+    void removeDead();
+
+    void consumeGrass();
+
+    void placeGrass(int amount);
 }

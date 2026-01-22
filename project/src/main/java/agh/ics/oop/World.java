@@ -1,5 +1,7 @@
 package agh.ics.oop;
 
+import agh.ics.oop.model.ConsoleMapDisplay;
+import agh.ics.oop.model.JungleMap;
 import agh.ics.oop.model.util.SimulationConfig;
 
 import java.io.FileDescriptor;
@@ -15,28 +17,15 @@ public class World {
          } catch (UnsupportedEncodingException e) {
              throw new InternalError("VM does not support mandatory encoding UTF-8");
          }
-         System.out.println("Hello");
+         System.out.println("Start");
 
-//         JungleMap map1 = new JungleMap(10,10);
-//         Animal cat = new Animal(new Vector2d(2,2),60);
-//         Animal tiger = new Animal(new Vector2d(2,2),60);
-//
-//         map1.placeAnimal(cat);
-//         map1.placeAnimal(tiger);
-//
-//         map1.reproduce();
-//
-//         for (Animal animal : map1.getAnimals()){
-//             map1.move(animal);
-//             System.out.println(map1);
-//         }
-//         map1.consumeGrass();
+         SimulationConfig config = new SimulationConfig(10, 10, 25, 20, 8, 20, 75, 100, 5, 50, 15, false, 3, 15);
+         JungleMap map = new JungleMap(config);
+         map.registerListener(new ConsoleMapDisplay());
 
          try {
-             Simulation simulation = new Simulation(new SimulationConfig(5, 5, 4, 20, 8, 15, 50, 100, 5, 50, 25, false, 3, 2));
-             for (int i = 0; i < 20; i++) {
-                 simulation.run();
-             }
+             Simulation simulation = new Simulation(map, config);
+             simulation.run(50);
          }
          catch (IllegalArgumentException e){
              e.printStackTrace();
