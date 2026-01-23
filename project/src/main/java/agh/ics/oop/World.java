@@ -1,6 +1,5 @@
 package agh.ics.oop;
 
-import agh.ics.oop.model.ConsoleMapDisplay;
 import agh.ics.oop.model.JungleMap;
 import agh.ics.oop.model.util.SimulationConfig;
 

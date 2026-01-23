@@ -12,6 +12,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,9 @@ public class StartPresenter {
     @FXML private TextField grassAmountField;
     @FXML private TextField genotypeLength;
     @FXML private TextField maxMutationsField;
+    @FXML private TextField fomoRadiusInsideField;
+    @FXML private TextField fomoRadiusOutsideField;
+    @FXML private TextField animalsToTriggerField;
 
     @FXML
     public void onStartClicked() {
@@ -50,7 +55,10 @@ public class StartPresenter {
                     Integer.parseInt(reproductionCostField.getText()),
                     fomoBoolean.isSelected(),
                     Integer.parseInt(maxMutationsField.getText()),
-                    Integer.parseInt(grassAmountField.getText())
+                    Integer.parseInt(grassAmountField.getText()),
+                    Integer.parseInt(fomoRadiusInsideField.getText()),
+                    Integer.parseInt(fomoRadiusOutsideField.getText()),
+                    Integer.parseInt(animalsToTriggerField.getText())
             );
 
             showSimulationWindow(config);
@@ -83,7 +91,8 @@ public class StartPresenter {
         stage.show();
 
         Simulation simulation = new Simulation(map,config);
-        presenter.setSimulation(simulation);
+        presenter.setThreadController(simulation);
+        presenter.setStatsProvider(simulation);
         List<Simulation> simulations_list = new ArrayList<>();
         simulations_list.add(simulation);
         SimulationEngine engine = new SimulationEngine(simulations_list);
@@ -92,7 +101,7 @@ public class StartPresenter {
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Błąd konfiguracji");
+        alert.setTitle("Configuration Error");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

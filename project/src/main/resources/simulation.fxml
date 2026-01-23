@@ -4,6 +4,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -19,12 +21,26 @@
             <Label fx:id="dayCountLabel" text="Day: 0"/>
             <Label fx:id="animalCountLabel" text="Animals: 0"/>
             <Label fx:id="grassCountLabel" text="Grass: 0"/>
-            <Label fx:id="freeFieldsLabel" text="Free: 0"/>
+            <Label fx:id="freeFieldsLabel" text="Vacant cells: 0"/>
             <Label fx:id="avgEnergyLabel" text="Avg Energy: 0"/>
             <Label fx:id="avgLifespanLabel" text="Avg Lifespan: 0"/>
+            <Label fx:id="avgChildrenLabel" text="Avg Children Amount: 0"/>
+            <Label text="Most Popular Genotype:"/>
+            <Label fx:id="mostPopGenotypeLabel" text=" " wrapText="true" maxWidth="200"/>
             <Separator />
-            <Button fx:id="pauseButton" text="Pause" onAction="#onPauseButtonClicked" />
-            <Button fx:id="stopButton" text="Stop" onAction="#onStopButtonClicked" />
+            <Label text="Choose a statistic:" style="-fx-font-weight: bold;" />
+            <ComboBox fx:id="statSelector" maxWidth="Infinity" />
+            <LineChart fx:id="populationChart" animated="false" createSymbols="false" style="-fx-padding: 0 20 0 0;">
+                <xAxis>
+                    <NumberAxis label="Day" side="BOTTOM" animated="false" />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis side="LEFT" animated="false" />
+                </yAxis>
+            </LineChart>
+            <Separator />
+            <Button maxWidth="Infinity" fx:id="pauseButton" text="Pause" onAction="#onPauseButtonClicked" />
+            <Button maxWidth="Infinity" fx:id="stopButton" text="Stop" onAction="#onStopButtonClicked" />
         </VBox>
     </left>
 

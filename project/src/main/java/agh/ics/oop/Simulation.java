@@ -3,23 +3,17 @@ package agh.ics.oop;
 import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.SimulationConfig;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
-public class Simulation implements Runnable {
+public class Simulation implements Runnable,StatsProvider,ThreadController {
     private final SimulationConfig config;
     private List<Animal> animalList = new ArrayList<>();
     private final WorldMap map;
-    private int day = 0;
     private volatile boolean running = true;
     private volatile boolean paused = false;
     private final Object pauseLock = new Object();
 
-    public int getDay(){
-        return this.day;
-    }
-
+    private int day = 0;
     public Simulation(WorldMap map, SimulationConfig config)
     {
         this.config = config;
@@ -40,8 +34,6 @@ public class Simulation implements Runnable {
 
     @Override
     public void run(){
-        int days;
-
         while (running&&!animalList.isEmpty()) {
             synchronized (pauseLock) {
                 if (!running) {
@@ -58,23 +50,29 @@ public class Simulation implements Runnable {
                     }
                 }
             }
+            map.removeDead();
+            this.animalList = new ArrayList<>(map.getAnimals().stream().filter(animal -> animal.getEnergy()>0).toList());
             for(Animal animal : animalList){
                 map.move(animal);
+
             }
 
             map.consumeGrass();
             animalList.forEach(animal -> animal.decreaseEnergy(config.MOVE_ENERGY_COST()));
             map.reproduce();
-            System.out.printf("Current day: %d%n",this.day);
 
             map.placeGrass(config.GRASS_REGROW_AMOUNT());
-            map.removeDead();
 
-            this.animalList = new ArrayList<>(map.getAnimals().stream().filter(animal -> animal.getEnergy()>0).toList());
+            for(Animal animal : animalList){
+                animal.setFomo(false);
+                animal.incrementAge();
+            }
+
             if(config.IS_MODIFIER_ACTIVE())
                 checkFOMO();
-            System.out.println(map);
-            this.day += 1;
+
+            map.mapChanged(String.format("Day: %d",this.day));
+            this.day+=1;
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -84,18 +82,20 @@ public class Simulation implements Runnable {
     }
 
     private void checkFOMO(){
-//        this.animalList.sort(Comparator
-//                .comparingInt((Animal animal) -> animal.getPosition().x())
-//                .thenComparing((Animal animal) -> animal.getPosition().y()));
         for(int i=0; i<animalList.size(); i++){
-            IO.println(animalList.get(i).getPosition());
-            int count_inside_fomo = 0;
+            Vector2d animal1pos = animalList.get(i).getPosition();
+            int countInsideFomo = 0;
+
             for(int j=0; j<animalList.size(); j++){
-                if(Math.abs(animalList.get(i).getPosition().x()-animalList.get(j).getPosition().x())<config.FOMO_RADIUS_INSIDE()
-                && Math.abs(animalList.get(i).getPosition().y()-animalList.get(j).getPosition().y())<config.FOMO_RADIUS_INSIDE()){
-                    count_inside_fomo += 1;
-                    if(count_inside_fomo >= config.AMOUNT_TO_TRIGGER_FOMO()){
-                        triggerFOMO(animalList.get(i).getPosition());
+                Vector2d animal2pos = animalList.get(j).getPosition();
+
+                if(Math.abs(animal1pos.x()-animal2pos.x())<config.FOMO_RADIUS_INSIDE()
+                && Math.abs(animal1pos.y()-animal2pos.y())<config.FOMO_RADIUS_INSIDE()
+                && animalList.get(i).getEnergy()>0
+                && animalList.get(j).getEnergy()>0){
+                    countInsideFomo += 1;
+                    if(countInsideFomo >= config.AMOUNT_TO_TRIGGER_FOMO()){
+                        triggerFOMO(animal1pos);
                         return;
                     }
                 }
@@ -103,7 +103,6 @@ public class Simulation implements Runnable {
         }
     }
     private void triggerFOMO(Vector2d pos){
-        System.out.printf("FOMO triggered at:%s%n",pos);
         for (Animal animal : animalList){
             if(!(Math.abs(animal.getPosition().x()-pos.x())<config.FOMO_RADIUS_INSIDE()
                     && Math.abs(animal.getPosition().y()-pos.y())<config.FOMO_RADIUS_INSIDE()))
@@ -116,19 +115,66 @@ public class Simulation implements Runnable {
             }
         }
     }
+    @Override
     public void stop() {
         running = false;
         resume();
     }
 
+    @Override
     public void pause() {
         paused = true;
     }
 
+    @Override
     public void resume() {
         synchronized (pauseLock) {
             paused = false;
             pauseLock.notifyAll();
         }
+    }
+
+    @Override
+    public synchronized SimulationStats getStats() {
+        int childrenCount = 0;
+        int sumEnergy = 0;
+        int totalDead = map.getTotalDeadCount();
+        long totalDeadAge = map.getTotalDeadAgeSum();
+        Set<Vector2d> occupied = new HashSet<>(map.getGrasses().keySet());
+        Map<List<Gene>,Integer> countGenotypes = new HashMap<>();
+        List<Animal> currentAnimals = this.getAnimals();
+        for (Animal animal : currentAnimals){
+            if(animal.getEnergy()<=0) continue;
+            int currentCount = countGenotypes.getOrDefault(animal.getGenotype(), 0);
+            countGenotypes.put(animal.getGenotype(), currentCount + 1);
+            childrenCount+=animal.getChildrenCount();
+            sumEnergy+=animal.getEnergy();
+            occupied.add(animal.getPosition());
+        }
+
+        List<Gene> maxKey = null;
+        int maxValue = Integer.MIN_VALUE;
+
+        for (Map.Entry<List<Gene>, Integer> entry : countGenotypes.entrySet()) {
+            if (maxKey == null || entry.getValue() > maxValue) {
+                maxValue = entry.getValue();
+                maxKey = entry.getKey();
+            }
+        }
+
+        SimulationStats currentStats = new SimulationStats(
+                day,
+                currentAnimals.size(),
+                map.getGrasses().size(),
+                occupied.size(),
+                !currentAnimals.isEmpty() ? (double) sumEnergy / currentAnimals.size(): 0,
+                totalDead!=0 ? (double) totalDeadAge / totalDead : 0,
+                !currentAnimals.isEmpty() ?(double)childrenCount / currentAnimals.size() : 0,
+                maxKey
+        );
+
+        currentStats.saveToCsv(map.getId());
+        return currentStats;
+
     }
 }

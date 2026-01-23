@@ -1,26 +1,32 @@
 package agh.ics.oop.presenter;
 
-import agh.ics.oop.Simulation;
 import agh.ics.oop.SimulationStats;
+import agh.ics.oop.StatsProvider;
+import agh.ics.oop.ThreadController;
 import agh.ics.oop.model.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class SimulationPresenter implements MapChangeListener {
     private WorldMap map;
     private int startEnergy;
-    private Simulation simulation;
+    private ThreadController controller;
+    private StatsProvider provider;
     private boolean isPaused = false;
 
-    @FXML private Label moveInfoLabel;
     @FXML private Canvas mapGrid;
     @FXML private Button pauseButton;
     @FXML private Button stopButton;
@@ -30,9 +36,44 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML private Label freeFieldsLabel;
     @FXML private Label avgEnergyLabel;
     @FXML private Label avgLifespanLabel;
+    @FXML private Label avgChildrenLabel;
+    @FXML private Label mostPopGenotypeLabel;
+
+    @FXML private LineChart<Number, Number> populationChart;
+    @FXML private ComboBox<String> statSelector;
+
+    private final String[] stats = {"Animals", "Grass", "Vacant cells", "Avg Energy", "Avg Lifespan", "Avg Children"};
+    private final Map<String, XYChart.Series<Number, Number>> allSeries = new HashMap<>();
+    private String currentlyTracked = "Animals";
 
     private static final Color STEP_COLOR = Color.LIGHTYELLOW;
-    private static final Color JUNGLE_COLOR = Color.web("#228B22");
+    private static final Color JUNGLE_COLOR = Color.LIGHTGREEN;
+    private static final Color GRASS_COLOR = Color.GREEN;
+
+    @FXML
+    public void initialize() {
+        populationChart.setLegendVisible(false);
+
+
+        for (String s : stats) {
+            XYChart.Series<Number, Number> series = new XYChart.Series<>();
+            series.setName(s);
+            allSeries.put(s, series);
+        }
+
+        statSelector.getItems().addAll(stats);
+        statSelector.setValue("Animals");
+
+        statSelector.setOnAction(e -> {
+            currentlyTracked = statSelector.getValue();
+            XYChart.Series<Number, Number> selectedSeries = allSeries.get(currentlyTracked);
+
+            populationChart.getData().clear();
+            populationChart.getData().add(selectedSeries);
+        });
+
+        populationChart.getData().add(allSeries.get("Animals"));
+    }
 
     public void setWorldMap(WorldMap map) {
         this.map = map;
@@ -42,8 +83,12 @@ public class SimulationPresenter implements MapChangeListener {
         this.startEnergy = startEnergy;
     }
 
-    public void setSimulation(Simulation sim){
-        this.simulation = sim;
+    public void setThreadController(ThreadController controller){
+        this.controller = controller;
+    }
+
+    public void setStatsProvider(StatsProvider provider){
+        this.provider = provider;
     }
 
     private void clearGrid(GraphicsContext graphics) {
@@ -108,7 +153,7 @@ public class SimulationPresenter implements MapChangeListener {
                     if (element instanceof Animal animal) {
                         drawAnimal(graphics, animal, x, y, cellSize);
                     } else {
-                        graphics.setFill(Color.GREEN);
+                        graphics.setFill(GRASS_COLOR);
                         graphics.fillRect(x, y, cellSize, cellSize);
                     }
                 }
@@ -130,7 +175,7 @@ public class SimulationPresenter implements MapChangeListener {
         if (health < 0.2) return Color.RED;
         if (health < 0.5) return Color.ORANGE;
         if (health < 0.75) return Color.YELLOW;
-        return Color.LIGHTGREEN;
+        return Color.WHITE;
     }
 
     private boolean isJungle(Vector2d pos) {
@@ -142,33 +187,42 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
     private void updateStatsUI(SimulationStats stats) {
-        dayCountLabel.setText("Day: " + simulation.getDay());
+        dayCountLabel.setText("Day: " + stats.day());
         animalCountLabel.setText("Animals: " + stats.animalCount());
         grassCountLabel.setText("Grass: " + stats.grassCount());
-        freeFieldsLabel.setText("Vacant cell: " + stats.freeFieldCount());
+        freeFieldsLabel.setText("Vacant cells: " + stats.freeFieldCount());
         avgEnergyLabel.setText(String.format("Avg Energy: %.2f", stats.avgEnergy()));
         avgLifespanLabel.setText(String.format("Avg Lifespan: %.2f", stats.avgLifespan()));
+        avgChildrenLabel.setText(String.format("Avg Children Amount: %.2f", stats.avgChildren()));
+        mostPopGenotypeLabel.setText(stats.mostPopularGenotype().toString());
+
+        allSeries.get("Animals").getData().add(new XYChart.Data<>(stats.day(), (double) stats.animalCount()));
+        allSeries.get("Grass").getData().add(new XYChart.Data<>(stats.day(), (double) stats.grassCount()));
+        allSeries.get("Vacant cells").getData().add(new XYChart.Data<>(stats.day(), (double) stats.freeFieldCount()));
+        allSeries.get("Avg Energy").getData().add(new XYChart.Data<>(stats.day(), stats.avgEnergy()));
+        allSeries.get("Avg Lifespan").getData().add(new XYChart.Data<>(stats.day(), stats.avgLifespan()));
+        allSeries.get("Avg Children").getData().add(new XYChart.Data<>(stats.day(), stats.avgChildren()));
     }
 
     @Override
     public void mapChanged(WorldMap world_map, String message) {
+        SimulationStats stats = provider.getStats();
         Platform.runLater(() -> {
             drawMap();
-            SimulationStats stats = map.getStats();
             updateStatsUI(stats);
         });
     }
 
     @FXML
     public void onPauseButtonClicked() {
-        if (simulation == null) return;
+        if (this.controller == null) return;
 
         if (isPaused) {
-            simulation.resume();
+            this.controller.resume();
             pauseButton.setText("Pause");
             isPaused = false;
         } else {
-            simulation.pause();
+            this.controller.pause();
             pauseButton.setText("Resume");
             isPaused = true;
         }
@@ -176,8 +230,8 @@ public class SimulationPresenter implements MapChangeListener {
 
     @FXML
     public void onStopButtonClicked() {
-        if (simulation != null) {
-            simulation.stop();
+        if (this.controller != null) {
+            this.controller.stop();
         }
     }
 }

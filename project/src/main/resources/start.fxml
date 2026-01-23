@@ -20,9 +20,25 @@
                 <TextField fx:id="mapHeightField" promptText="Height"/>
             </HBox>
 
+
+            <Label text="FOMO Settings" style="-fx-font-weight: bold" />
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label text="Start With FOMO Variant" />
                 <CheckBox fx:id="fomoBoolean" />
+            </HBox>
+
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Fomo InsideRadius"/>
+                <TextField fx:id="fomoRadiusInsideField" text="0" />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Fomo Outside Radius"/>
+                <TextField fx:id="fomoRadiusOutsideField" text="0"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Animals Amount To Trigger"/>
+                <TextField fx:id="animalsToTriggerField" text="0"/>
             </HBox>
 
 
