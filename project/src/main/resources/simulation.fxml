@@ -15,7 +15,7 @@
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
-            <Label text="Statystyki" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+            <Label text="Stats" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
             <Label fx:id="dayCountLabel" text="Day: 0"/>
             <Label fx:id="animalCountLabel" text="Animals: 0"/>
             <Label fx:id="grassCountLabel" text="Grass: 0"/>

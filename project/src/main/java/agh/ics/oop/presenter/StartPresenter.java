@@ -56,11 +56,11 @@ public class StartPresenter {
             showSimulationWindow(config);
 
         } catch (NumberFormatException e) {
-            showError("Upewnij się, że wszystkie pola liczbowe są wypełnione poprawnie!");
+            showError("Make sure that all inputs are filled");
         } catch (IllegalArgumentException e) {
-            showError("Błąd parametrów: " + e.getMessage());
+            showError("Parameter Error: " + e.getMessage());
         } catch (IOException e) {
-            showError("Błąd ładowania okna symulacji.");
+            showError("Failed to load the simulation.");
             e.printStackTrace();
         }
     }
