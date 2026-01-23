@@ -7,11 +7,18 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Simulation {
+public class Simulation implements Runnable {
     private final SimulationConfig config;
     private List<Animal> animalList = new ArrayList<>();
     private final WorldMap map;
     private int day = 0;
+    private volatile boolean running = true;
+    private volatile boolean paused = false;
+    private final Object pauseLock = new Object();
+
+    public int getDay(){
+        return this.day;
+    }
 
     public Simulation(WorldMap map, SimulationConfig config)
     {
@@ -31,8 +38,26 @@ public class Simulation {
         return this.animalList;
     }
 
-    public void run(int days){
-        for (int i = 0; i <= days; i++) {
+    @Override
+    public void run(){
+        int days;
+
+        while (running&&!animalList.isEmpty()) {
+            synchronized (pauseLock) {
+                if (!running) {
+                    break;
+                }
+                if (paused) {
+                    try {
+                        pauseLock.wait();
+                    } catch (InterruptedException ex) {
+                        break;
+                    }
+                    if (!running) {
+                        break;
+                    }
+                }
+            }
             for(Animal animal : animalList){
                 map.move(animal);
             }
@@ -50,6 +75,11 @@ public class Simulation {
                 checkFOMO();
             System.out.println(map);
             this.day += 1;
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -84,6 +114,21 @@ public class Simulation {
                     animal.triggerFOMO(pos);
                 }
             }
+        }
+    }
+    public void stop() {
+        running = false;
+        resume();
+    }
+
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        synchronized (pauseLock) {
+            paused = false;
+            pauseLock.notifyAll();
         }
     }
 }

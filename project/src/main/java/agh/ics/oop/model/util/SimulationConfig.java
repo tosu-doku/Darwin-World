@@ -2,9 +2,12 @@ package agh.ics.oop.model.util;
 
 import agh.ics.oop.model.JungleMap;
 
-public record SimulationConfig(int mapWidth, int mapHeight,
-        int START_ANIMAL_AMOUNT, int START_GRASS_AMOUNT,
-        int GENOTYPE_LENGTH, int ENERGY_FROM_EATING_GRASS_AMOUNT,
+public record SimulationConfig(
+        int mapWidth, int mapHeight,
+        int START_ANIMAL_AMOUNT,
+        int START_GRASS_AMOUNT,
+        int GENOTYPE_LENGTH,
+        int ENERGY_FROM_EATING_GRASS_AMOUNT,
         int START_ANIMAL_ENERGY,
         int ENERGY_LIMIT, int MOVE_ENERGY_COST,
         int REPRODUCE_ENERGY_LIMIT, int REPRODUCE_ENERGY_COST,
