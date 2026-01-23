@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane minHeight="400.0" minWidth="300.0" xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="agh.ics.oop.presenter.StartPresenter">
+
+    <center>
+        <VBox spacing="10.0">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+
+            <Label text="Map Dimensions" style="-fx-font-weight: bold" />
+            <HBox spacing="10">
+                <TextField fx:id="mapWidthField" promptText="Width"  />
+                <TextField fx:id="mapHeightField" promptText="Height"/>
+            </HBox>
+
+
+            <Label text="FOMO Settings" style="-fx-font-weight: bold" />
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Start With FOMO Variant" />
+                <CheckBox fx:id="fomoBoolean" />
+            </HBox>
+
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Fomo InsideRadius"/>
+                <TextField fx:id="fomoRadiusInsideField" text="0" />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Fomo Outside Radius"/>
+                <TextField fx:id="fomoRadiusOutsideField" text="0"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Animals Amount To Trigger"/>
+                <TextField fx:id="animalsToTriggerField" text="0"/>
+            </HBox>
+
+
+            <Label text="Energy Settings" style="-fx-font-weight: bold" />
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Energy Limit"/>
+                <TextField fx:id="limitEnergyField" text="100"/>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Start Animal Energy"/>
+                <TextField fx:id="startEnergyField" text="50" />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Healthy Animal Energy"/>
+                <TextField fx:id="healthyEnergyField" text="20" />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Move Energy Cost"/>
+                <TextField fx:id="moveCostField" text="1"  />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Reproduction Energy Cost"/>
+                <TextField fx:id="reproductionCostField" text="10"  />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Energy from Grass"/>
+                <TextField fx:id="grassEnergyField" text="15"  />
+            </HBox>
+
+
+            <Label text="Spawn Settings" style="-fx-font-weight: bold" />
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Start Animal Amount"/>
+                <TextField fx:id="animalAmountField" text="10"  />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Start Grass Amount"/>
+                <TextField fx:id="startGrassAmountField" text="30"  />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Grass per Day"/>
+                <TextField fx:id="grassAmountField" text="4" />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Genotype Length"/>
+                <TextField fx:id="genotypeLength" text="20" />
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Max Mutations Amount"/>
+                <TextField fx:id="maxMutationsField" text="5" />
+            </HBox>
+
+            <Separator />
+
+            <Button text="Start Simulation" onAction="#onStartClicked"
+                    maxWidth="Infinity" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
+        </VBox>
+    </center>
+</BorderPane>

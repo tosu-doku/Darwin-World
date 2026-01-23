@@ -18,7 +18,7 @@ public class Animal implements WorldElement {
     private int energy;
     private int age = 0;
     private int childrenCount = 0;
-    private boolean isFomoActive = false;
+    private boolean fomoActive = false;
     private MapDirection fomoDirectionOverride;
 
     private final SimulationConfig config;
@@ -58,6 +58,14 @@ public class Animal implements WorldElement {
         return this.age;
     }
 
+    public boolean isFomoActive(){
+        return this.fomoActive;
+    }
+
+    public void  setFomo(boolean bool){
+        this.fomoActive = bool;
+    }
+
     public int getChildrenCount(){
         return this.childrenCount;
     }
@@ -70,13 +78,15 @@ public class Animal implements WorldElement {
         this.energy = Math.min(config.ENERGY_LIMIT(), this.energy+delta);
     }
 
-    public void increaseAge(){
+    public void incrementAge(){
         this.age+=1;
     }
 
     public void increaseChildrenCount(){
         this.childrenCount+=1;
     }
+
+
 
     @Override
     public Vector2d getPosition() {
@@ -91,7 +101,7 @@ public class Animal implements WorldElement {
     public void move(MoveValidator moveValidator){
         if(this.energy>0){
             MapDirection directionToMove = genotype.getNewDirection(this.direction);
-            if(isFomoActive){
+            if(fomoActive){
                 directionToMove = fomoDirectionOverride;
             }
             Vector2d posAfterMove = this.position.add(directionToMove.toVector());
@@ -175,7 +185,7 @@ public class Animal implements WorldElement {
     }
 
     public void triggerFOMO(Vector2d pos){
-        this.isFomoActive=true;
+        this.fomoActive=true;
         int sum = 0;
         int directionX = (int) Math.signum(pos.x() - this.position.x());
         int directionY = (int) Math.signum(pos.y() - this.position.y());

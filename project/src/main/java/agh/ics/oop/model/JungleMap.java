@@ -1,15 +1,16 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.SimulationStats;
 import agh.ics.oop.model.util.MapVisualizer;
 import agh.ics.oop.model.util.SimulationConfig;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class JungleMap implements WorldMap{
-    private Map<Vector2d,  ArrayList<Animal>> animals = new HashMap<>();
-    private Map<Vector2d, Grass> grasses = new HashMap<>();
+    private final Map<Vector2d,  ArrayList<Animal>> animals = new ConcurrentHashMap<>();
+    private final Map<Vector2d, Grass> grasses = new ConcurrentHashMap<>();
     private final List<MapChangeListener> listeners = new ArrayList<>();
 
     private final UUID mapId = UUID.randomUUID();
@@ -20,6 +21,10 @@ public class JungleMap implements WorldMap{
 
     private final SimulationConfig config;
 
+
+    private int totalDeadCount = 0;
+    private long totalDeadAgeSum = 0;
+
     public JungleMap(SimulationConfig config){
         this.config = config;
 
@@ -28,6 +33,15 @@ public class JungleMap implements WorldMap{
         this.jungleBoundary = new Boundary(new Vector2d(0,offsetY),new Vector2d(config.mapWidth()-1,config.mapHeight()-offsetY-1));
         placeGrass(config.START_GRASS_AMOUNT());
     }
+
+    public int getTotalDeadCount() {
+        return totalDeadCount;
+    }
+
+    public long getTotalDeadAgeSum() {
+        return totalDeadAgeSum;
+    }
+
 
     @Override
     public boolean isInBounds(Vector2d position){
@@ -46,7 +60,6 @@ public class JungleMap implements WorldMap{
         } else {
             animals.get(animal.getPosition()).add(animal);
         }
-
     }
 
     @Override
@@ -62,43 +75,46 @@ public class JungleMap implements WorldMap{
                 }
                 animal.move(this);
                 placeAnimal(animal);
-                this.mapChanged(String.format(
-                        "Animal moved: (%d,%d) -> (%d,%d); Energy: %s",
-                        pos.x(),
-                        pos.y(),
-                        animal.getPosition().x(),
-                        animal.getPosition().y(),
-                        animal.getEnergy()
-                ));
             }
         }
     }
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        return objectAt(position) instanceof WorldElement;
+        return objectAt(position).isPresent();
     }
 
     @Override
-    public WorldElement objectAt(Vector2d position) {
-        if(animals.get(position)!=null){
-            return animals.get(position)
-                    .stream()
-                    .max(Comparator.comparing(Animal::getEnergy))
-                    .orElse(null);
-        } else if(grasses.get(position)!=null){
-            return grasses.get(position);
+    public synchronized Optional<WorldElement> objectAt(Vector2d pos) {
+        ArrayList<Animal> animalsAtPos = animals.get(pos);
+        if (animalsAtPos == null || animalsAtPos.isEmpty()) {
+            Grass grass = grasses.get(pos);
+            return Optional.ofNullable(grass);
         }
-        return null;
+
+        Animal strongest = null;
+        for (Animal a : animalsAtPos) {
+            if (strongest == null || a.getEnergy() > strongest.getEnergy()) {
+                strongest = a;
+            }
+        }
+        return Optional.ofNullable(strongest);
     }
 
-    public ArrayList<Animal> getAnimals() {
+    public synchronized ArrayList<Animal> getAnimals() {
+
         ArrayList<Animal> allAnimals = new ArrayList<>();
-        for (Vector2d pos : animals.keySet()){
-            allAnimals.addAll(animals.get(pos));
+        for (ArrayList<Animal> animalList : animals.values()){
+            if (animalList != null) {
+                allAnimals.addAll(animalList);
+            }
         }
 
         return allAnimals;
+    }
+
+    public Map<Vector2d,Grass> getGrasses(){
+        return this.grasses;
     }
 
 
@@ -117,6 +133,8 @@ public class JungleMap implements WorldMap{
             if (!grasses.containsKey(candidates.getFirst().getPosition())) continue;
             candidates.sort(Animal.animalComparator);
             Animal first = candidates.getFirst();
+            if(first.getEnergy()> config.ENERGY_LIMIT()) continue;
+            if(first.isFomoActive()) break;
             first.increaseEnergy(config.ENERGY_FROM_EATING_GRASS_AMOUNT());
             grasses.remove(first.getPosition());
         }
@@ -129,7 +147,7 @@ public class JungleMap implements WorldMap{
             candidates.sort(Animal.animalComparator);
             Animal firstParent = candidates.get(0);
             Animal secondParent = candidates.get(1);
-
+            if (firstParent.isFomoActive()) break;
             if (firstParent.getEnergy()>config.REPRODUCE_ENERGY_LIMIT() && secondParent.getEnergy()>config.REPRODUCE_ENERGY_LIMIT()) {
                 Animal child = firstParent.reproduce(secondParent);
                 firstParent.increaseChildrenCount();
@@ -140,12 +158,6 @@ public class JungleMap implements WorldMap{
         }
         for (Animal child : newborns) {
             this.placeAnimal(child);
-            this.mapChanged(String.format(
-                    "New animal has been born on (%d,%d) facing %s",
-                    child.getPosition().x(),
-                    child.getPosition().y(),
-                    child.getDirection()
-            ));
         }
     }
 
@@ -154,7 +166,14 @@ public class JungleMap implements WorldMap{
 
         for (Vector2d pos : animals.keySet()) {
             ArrayList<Animal> animalList = animals.get(pos);
-            animalList.removeIf(animal -> animal.getEnergy() <= 0);
+            animalList.removeIf(animal -> {
+                if (animal.getEnergy() <= 0) {
+                    totalDeadCount+=1;
+                    totalDeadAgeSum+=animal.getAge();
+                    return true;
+                }
+                return false;
+            });
             if (animalList.isEmpty()) {
                 positionsToRemove.add(pos);
             }
@@ -214,6 +233,11 @@ public class JungleMap implements WorldMap{
         }
     }
 
+    public boolean isInJungle(Vector2d position) {
+        // jungleLowerLeft i jungleUpperRight to Twoje pola wyznaczające dżunglę
+        return position.follows(jungleBoundary.lowerBoundary()) && position.precedes(jungleBoundary.higherBoundary());
+    }
+
     public void registerListener(MapChangeListener listener){
         this.listeners.add(listener);
     }
@@ -222,7 +246,8 @@ public class JungleMap implements WorldMap{
         this.listeners.remove(listener);
     }
 
-    private void mapChanged(String message){
+    public void mapChanged(String message){
         this.listeners.forEach(listener -> listener.mapChanged(this,message));
     }
+
 }

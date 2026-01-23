@@ -1,6 +1,5 @@
 package agh.ics.oop;
 
-import agh.ics.oop.model.ConsoleMapDisplay;
 import agh.ics.oop.model.JungleMap;
 import agh.ics.oop.model.util.SimulationConfig;
 
@@ -25,7 +24,7 @@ public class World {
 
          try {
              Simulation simulation = new Simulation(map, config);
-             simulation.run(20);
+             simulation.run();
          }
          catch (IllegalArgumentException e){
              e.printStackTrace();
