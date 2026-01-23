@@ -11,11 +11,35 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static agh.ics.oop.model.MapDirection.*;
+import static agh.ics.oop.model.MapDirection.NORTH;
+import static agh.ics.oop.model.MapDirection.NORTHWEST;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JungleMapTest {
+    static SimulationConfig confPlace0grass = new SimulationConfig(10,10,0,0,0,0,0,0,0,0,0,false,0,0,0,0,0);
+    static SimulationConfig confPlace5grass = new SimulationConfig(10,10,0,5,0,0,0,0,0,0,0,false,0,0,0,0,0);
     static SimulationConfig confReproduceCost10 = new SimulationConfig(10,10,0,0,2,0,0,0,0,10,10,false,0,0,0,0,0);
-    
+
+    private static Stream<Arguments> provideArgsForPlaceGrassCorrectAmountPlaced() {
+        return Stream.of(
+                Arguments.of(new JungleMap(confPlace0grass),0,5,5),
+                Arguments.of(new JungleMap(confPlace0grass),0,confPlace0grass.mapHeight()*confPlace0grass.mapWidth()+2,confPlace0grass.mapHeight()*confPlace0grass.mapWidth()),
+                Arguments.of(new JungleMap(confPlace5grass),5,0,5),
+                Arguments.of(new JungleMap(confPlace5grass),5,5,10)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideArgsForPlaceGrassCorrectAmountPlaced")
+    void placeGrassCorrectAmountPlaced(JungleMap map, int amountPlacedAtStart, int placeMore, int finalGrassCount) {
+        assertEquals(amountPlacedAtStart, map.getGrasses().size());
+
+        map.placeGrass(placeMore);
+
+        assertEquals(finalGrassCount, map.getGrasses().size());
+    }
+
     private static Stream<Arguments> provideAnimalsForReproduceTesting() {
         return Stream.of(
             Arguments.of( new JungleMap(confReproduceCost10), new ArrayList<>(Arrays.asList(
