@@ -1,5 +1,6 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.model.util.SimulationConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -13,29 +14,30 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JungleMapTest {
-    // do przerobienia
+    static SimulationConfig confReproduceCost10 = new SimulationConfig(10,10,0,0,2,0,0,0,0,10,10,false,0,0,0,0,0);
+    
     private static Stream<Arguments> provideAnimalsForReproduceTesting() {
         return Stream.of(
-            Arguments.of( new JungleMap(10,10), new ArrayList<>(Arrays.asList(
-                new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(0),new Gene(1)))),
-                new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(4),new Gene(7))))
+            Arguments.of( new JungleMap(confReproduceCost10), new ArrayList<>(Arrays.asList(
+                new Animal(confReproduceCost10,new Vector2d(2,2),50),
+                new Animal(confReproduceCost10,new Vector2d(2,2),50)
             )),3),
             // no energy to mate
-            Arguments.of( new JungleMap(10,10), new ArrayList<>(Arrays.asList(
-                new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(0),new Gene(1))),1),
-                new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(4),new Gene(7))),1)
-            )),2),
+                Arguments.of( new JungleMap(confReproduceCost10), new ArrayList<>(Arrays.asList(
+                        new Animal(confReproduceCost10,new Vector2d(2,2),1),
+                        new Animal(confReproduceCost10,new Vector2d(2,2),1)
+                )),2),
             // different spots
-            Arguments.of( new JungleMap(10,10), new ArrayList<>(Arrays.asList(
-                new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(0),new Gene(1)))),
-                new Animal(new Vector2d(2,3),new ArrayList<Gene>(List.of(new Gene(4),new Gene(7))))
-            )),2),
+                Arguments.of( new JungleMap(confReproduceCost10), new ArrayList<>(Arrays.asList(
+                        new Animal(confReproduceCost10,new Vector2d(2,3),50),
+                        new Animal(confReproduceCost10,new Vector2d(2,2),50)
+                )),2),
             // only animals with energy mate
-            Arguments.of( new JungleMap(10,10), new ArrayList<>(Arrays.asList(
-                new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(0),new Gene(1))),1),
-                new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(4),new Gene(7)))),
-                new Animal(new Vector2d(2,2),new ArrayList<Gene>(List.of(new Gene(1),new Gene(1))))
-            )),4)
+                Arguments.of( new JungleMap(confReproduceCost10), new ArrayList<>(Arrays.asList(
+                        new Animal(confReproduceCost10,new Vector2d(2,2),50),
+                        new Animal(confReproduceCost10,new Vector2d(2,2),50),
+                        new Animal(confReproduceCost10,new Vector2d(2,2),0)
+                )),4)
         );
     }
 
