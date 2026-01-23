@@ -146,12 +146,13 @@ public class Simulation implements Runnable,StatsProvider,ThreadController {
         Set<Vector2d> occupied = new HashSet<>(map.getGrasses().keySet());
         List<Animal> currentAnimals = this.getAnimals();
         for (Animal animal : currentAnimals){
+            if(animal.getEnergy()<=0) continue;
             childrenCount+=animal.getChildrenCount();
             sumEnergy+=animal.getEnergy();
             occupied.add(animal.getPosition());
         }
 
-        return new SimulationStats(
+        SimulationStats currentStats = new SimulationStats(
                 day,
                 currentAnimals.size(),
                 map.getGrasses().size(),
@@ -160,6 +161,9 @@ public class Simulation implements Runnable,StatsProvider,ThreadController {
                 totalDead!=0 ? (double) totalDeadAge / totalDead : 0,
                 !currentAnimals.isEmpty() ?(double)childrenCount / currentAnimals.size() : 0
         );
+
+        currentStats.saveToCsv(map.getId());
+        return currentStats;
 
     }
 }

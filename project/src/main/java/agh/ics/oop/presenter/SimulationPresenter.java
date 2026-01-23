@@ -41,6 +41,7 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML private LineChart<Number, Number> populationChart;
     @FXML private ComboBox<String> statSelector;
 
+    private final String[] stats = {"Animals", "Grass", "Vacant cells", "Avg Energy", "Avg Lifespan", "Avg Children"};
     private final Map<String, XYChart.Series<Number, Number>> allSeries = new HashMap<>();
     private String currentlyTracked = "Animals";
 
@@ -50,7 +51,7 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     public void initialize() {
         populationChart.setLegendVisible(false);
-        String[] stats = {"Animals", "Grass", "Vacant cells", "Avg Energy", "Avg Lifespan", "Avg Children"};
+
 
         for (String s : stats) {
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
@@ -80,7 +81,7 @@ public class SimulationPresenter implements MapChangeListener {
         this.startEnergy = startEnergy;
     }
 
-    public void setThreadControler(ThreadController controller){
+    public void setThreadController(ThreadController controller){
         this.controller = controller;
     }
 
@@ -192,15 +193,12 @@ public class SimulationPresenter implements MapChangeListener {
         avgLifespanLabel.setText(String.format("Avg Lifespan: %.2f", stats.avgLifespan()));
         avgChildrenLabel.setText(String.format("Avg Children Amount: %.2f", stats.avgChildren()));
 
-        Platform.runLater(() -> {
-            allSeries.get("Animals").getData().add(new XYChart.Data<>(stats.day(), (double) stats.animalCount()));
-            allSeries.get("Grass").getData().add(new XYChart.Data<>(stats.day(), (double) stats.grassCount()));
-            allSeries.get("Vacant cells").getData().add(new XYChart.Data<>(stats.day(), (double) stats.freeFieldCount()));
-            allSeries.get("Avg Energy").getData().add(new XYChart.Data<>(stats.day(), stats.avgEnergy()));
-            allSeries.get("Avg Lifespan").getData().add(new XYChart.Data<>(stats.day(), stats.avgLifespan()));
-            allSeries.get("Avg Children").getData().add(new XYChart.Data<>(stats.day(), stats.avgChildren()));
-
-        });
+        allSeries.get("Animals").getData().add(new XYChart.Data<>(stats.day(), (double) stats.animalCount()));
+        allSeries.get("Grass").getData().add(new XYChart.Data<>(stats.day(), (double) stats.grassCount()));
+        allSeries.get("Vacant cells").getData().add(new XYChart.Data<>(stats.day(), (double) stats.freeFieldCount()));
+        allSeries.get("Avg Energy").getData().add(new XYChart.Data<>(stats.day(), stats.avgEnergy()));
+        allSeries.get("Avg Lifespan").getData().add(new XYChart.Data<>(stats.day(), stats.avgLifespan()));
+        allSeries.get("Avg Children").getData().add(new XYChart.Data<>(stats.day(), stats.avgChildren()));
     }
 
     @Override

@@ -91,7 +91,7 @@ public class StartPresenter {
         stage.show();
 
         Simulation simulation = new Simulation(map,config);
-        presenter.setThreadControler(simulation);
+        presenter.setThreadController(simulation);
         presenter.setStatsProvider(simulation);
         List<Simulation> simulations_list = new ArrayList<>();
         simulations_list.add(simulation);

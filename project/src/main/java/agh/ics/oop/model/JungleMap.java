@@ -29,7 +29,7 @@ public class JungleMap implements WorldMap{
         this.config = config;
 
         this.mapBoundary = new Boundary(new Vector2d(0,0),new Vector2d(config.mapWidth()-1,config.mapHeight()-1));
-        int offsetY = (int) (config.mapHeight()*0.3);
+        int offsetY = (int) (config.mapHeight()*0.4);
         this.jungleBoundary = new Boundary(new Vector2d(0,offsetY),new Vector2d(config.mapWidth()-1,config.mapHeight()-offsetY-1));
         placeGrass(config.START_GRASS_AMOUNT());
     }
