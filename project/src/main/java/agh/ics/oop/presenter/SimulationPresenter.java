@@ -7,6 +7,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -31,9 +33,21 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML private Label avgEnergyLabel;
     @FXML private Label avgLifespanLabel;
     @FXML private Label avgChildrenLabel;
+    @FXML private LineChart<Number, Number> populationChart;
+
+    private final XYChart.Series<Number, Number> animalSeries = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> grassSeries = new XYChart.Series<>();
 
     private static final Color STEP_COLOR = Color.LIGHTYELLOW;
     private static final Color JUNGLE_COLOR = Color.web("#228B22");
+
+    @FXML
+    public void initialize() {
+        animalSeries.setName("Animals");
+        grassSeries.setName("Grass");
+        populationChart.getData().add(animalSeries);
+        populationChart.getData().add(grassSeries);
+    }
 
     public void setWorldMap(WorldMap map) {
         this.map = map;
@@ -143,20 +157,26 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
     private void updateStatsUI(SimulationStats stats) {
-        dayCountLabel.setText("Day: " + simulation.getDay());
+        if (stats.day() % 20 == 0) {
+            animalSeries.getData().add(new XYChart.Data<>(stats.day(), stats.animalCount()));
+            grassSeries.getData().add(new XYChart.Data<>(stats.day(), stats.grassCount()));
+        }
+        dayCountLabel.setText("Day: " + stats.day());
         animalCountLabel.setText("Animals: " + stats.animalCount());
         grassCountLabel.setText("Grass: " + stats.grassCount());
         freeFieldsLabel.setText("Vacant cell: " + stats.freeFieldCount());
         avgEnergyLabel.setText(String.format("Avg Energy: %.2f", stats.avgEnergy()));
         avgLifespanLabel.setText(String.format("Avg Lifespan: %.2f", stats.avgLifespan()));
         avgChildrenLabel.setText(String.format("Avg Children Count: %.2f", stats.avgChildren()));
+        animalSeries.getData().add(new XYChart.Data<>(stats.day(), stats.animalCount()));
+        grassSeries.getData().add(new XYChart.Data<>(stats.day(), stats.grassCount()));
     }
 
     @Override
     public void mapChanged(WorldMap world_map, String message) {
+        SimulationStats stats = simulation.getStats();
         Platform.runLater(() -> {
             drawMap();
-            SimulationStats stats = map.getStats();
             updateStatsUI(stats);
         });
     }

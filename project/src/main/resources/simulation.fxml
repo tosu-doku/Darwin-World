@@ -4,6 +4,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -23,6 +25,15 @@
             <Label fx:id="avgEnergyLabel" text="Avg Energy: 0"/>
             <Label fx:id="avgLifespanLabel" text="Avg Lifespan: 0"/>
             <Label fx:id="avgChildrenLabel" text="Avg Children Sum: 0"/>
+            <Separator />
+            <LineChart fx:id="populationChart" animated="false" createSymbols="false">
+                <xAxis>
+                    <NumberAxis label="Day" side="BOTTOM" animated="false" />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis side="LEFT" animated="false" />
+                </yAxis>
+            </LineChart>
             <Separator />
             <Button maxWidth="Infinity" fx:id="pauseButton" text="Pause" onAction="#onPauseButtonClicked" />
             <Button maxWidth="Infinity" fx:id="stopButton" text="Stop" onAction="#onStopButtonClicked" />

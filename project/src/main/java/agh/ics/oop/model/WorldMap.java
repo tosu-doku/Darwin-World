@@ -4,6 +4,7 @@ import agh.ics.oop.SimulationStats;
 import agh.ics.oop.World;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +25,12 @@ public interface WorldMap extends MoveValidator {
 
     List<Animal> getAnimals();
 
+    Map<Vector2d,Grass> getGrasses();
+
+    int getTotalDeadCount();
+
+    long getTotalDeadAgeSum();
+
     void reproduce();
 
     void removeDead();
@@ -34,5 +41,6 @@ public interface WorldMap extends MoveValidator {
 
     boolean isInJungle(Vector2d pos);
 
-    SimulationStats getStats();
+    void mapChanged(String message);
+
 }
