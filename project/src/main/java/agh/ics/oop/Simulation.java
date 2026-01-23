@@ -53,9 +53,10 @@ public class Simulation implements Runnable,StatsProvider,ThreadController {
                     }
                 }
             }
+            map.removeDead();
+            this.animalList = new ArrayList<>(map.getAnimals().stream().filter(animal -> animal.getEnergy()>0).toList());
             for(Animal animal : animalList){
                 map.move(animal);
-                animal.incrementAge();
 
             }
 
@@ -64,13 +65,12 @@ public class Simulation implements Runnable,StatsProvider,ThreadController {
             map.reproduce();
 
             map.placeGrass(config.GRASS_REGROW_AMOUNT());
-            map.removeDead();
 
             for(Animal animal : animalList){
                 animal.setFomo(false);
-
+                animal.incrementAge();
             }
-            this.animalList = new ArrayList<>(map.getAnimals().stream().filter(animal -> animal.getEnergy()>0).toList());
+
             if(config.IS_MODIFIER_ACTIVE())
                 checkFOMO();
 
