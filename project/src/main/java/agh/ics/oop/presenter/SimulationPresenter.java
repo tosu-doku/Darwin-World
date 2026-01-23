@@ -30,6 +30,7 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML private Label freeFieldsLabel;
     @FXML private Label avgEnergyLabel;
     @FXML private Label avgLifespanLabel;
+    @FXML private Label avgChildrenLabel;
 
     private static final Color STEP_COLOR = Color.LIGHTYELLOW;
     private static final Color JUNGLE_COLOR = Color.web("#228B22");
@@ -148,6 +149,7 @@ public class SimulationPresenter implements MapChangeListener {
         freeFieldsLabel.setText("Vacant cell: " + stats.freeFieldCount());
         avgEnergyLabel.setText(String.format("Avg Energy: %.2f", stats.avgEnergy()));
         avgLifespanLabel.setText(String.format("Avg Lifespan: %.2f", stats.avgLifespan()));
+        avgChildrenLabel.setText(String.format("Avg Children Count: %.2f", stats.avgChildren()));
     }
 
     @Override

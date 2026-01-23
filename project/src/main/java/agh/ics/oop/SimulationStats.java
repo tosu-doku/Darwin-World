@@ -5,5 +5,6 @@ public record SimulationStats(
         int grassCount,
         int freeFieldCount,
         double avgEnergy,
-        double avgLifespan
+        double avgLifespan,
+        double avgChildren
 ) {}

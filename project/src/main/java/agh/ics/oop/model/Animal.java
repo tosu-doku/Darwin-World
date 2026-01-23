@@ -78,7 +78,7 @@ public class Animal implements WorldElement {
         this.energy = Math.min(config.ENERGY_LIMIT(), this.energy+delta);
     }
 
-    public void increaseAge(){
+    public void incrementAge(){
         this.age+=1;
     }
 

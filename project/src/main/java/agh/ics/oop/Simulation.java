@@ -57,6 +57,7 @@ public class Simulation implements Runnable {
             }
             for(Animal animal : animalList){
                 map.move(animal);
+                animal.incrementAge();
 
             }
 

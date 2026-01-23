@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class JungleMap implements WorldMap{
     private Map<Vector2d,  ArrayList<Animal>> animals = new ConcurrentHashMap<>();
     private Map<Vector2d, Grass> grasses = new ConcurrentHashMap<>();
+    private final List<Animal> deadAnimals = new ArrayList<>();
     private final List<MapChangeListener> listeners = new ArrayList<>();
 
     private final UUID mapId = UUID.randomUUID();
@@ -102,8 +103,10 @@ public class JungleMap implements WorldMap{
     public synchronized ArrayList<Animal> getAnimals() {
 
         ArrayList<Animal> allAnimals = new ArrayList<>();
-        for (Vector2d pos : animals.keySet()){
-            allAnimals.addAll(animals.get(pos));
+        for (ArrayList<Animal> animalList : animals.values()){
+            if (animalList != null) {
+                allAnimals.addAll(animalList);
+            }
         }
 
         return allAnimals;
@@ -125,6 +128,7 @@ public class JungleMap implements WorldMap{
             if (!grasses.containsKey(candidates.getFirst().getPosition())) continue;
             candidates.sort(Animal.animalComparator);
             Animal first = candidates.getFirst();
+            if(first.getEnergy()> config.ENERGY_LIMIT()) continue;
             if(first.isFomoActive()) break;
             first.increaseEnergy(config.ENERGY_FROM_EATING_GRASS_AMOUNT());
             grasses.remove(first.getPosition());
@@ -163,7 +167,13 @@ public class JungleMap implements WorldMap{
 
         for (Vector2d pos : animals.keySet()) {
             ArrayList<Animal> animalList = animals.get(pos);
-            animalList.removeIf(animal -> animal.getEnergy() <= 0);
+            animalList.removeIf(animal -> {
+                if (animal.getEnergy() <= 0) {
+                    deadAnimals.add(animal);
+                    return true;
+                }
+                return false;
+            });
             if (animalList.isEmpty()) {
                 positionsToRemove.add(pos);
             }
@@ -242,12 +252,30 @@ public class JungleMap implements WorldMap{
 
     @Override
     public SimulationStats getStats() {
+        int childrenCount = 0;
+        int sumEnergy = 0;
+        int ageSum = 0;
+        List<Animal> currentAnimals = this.getAnimals();
+        for (Animal animal : currentAnimals){
+            childrenCount+=animal.getChildrenCount();
+            sumEnergy+=animal.getEnergy();
+        }
+
+        Set<Vector2d> occupied = new HashSet<>(grasses.keySet());
+        occupied.addAll(animals.keySet());
+
+        for (Animal animal : deadAnimals){
+            ageSum+=animal.getAge();
+        }
+
         return new SimulationStats(
                 animals.size(),
                 grasses.size(),
-                config.mapWidth()* config.mapHeight()-animals.keySet().size()-grasses.size(),
-                0,
-                0
-        );
+                config.mapWidth()* config.mapHeight()-occupied.size(),
+                !animals.isEmpty() ? (double) sumEnergy / currentAnimals.size(): 0,
+                !deadAnimals.isEmpty() ? (double) ageSum /deadAnimals.size() : 0,
+                !animals.isEmpty() ?(double)childrenCount / currentAnimals.size() : 0
+                );
+
     }
 }
