@@ -2,6 +2,7 @@ package agh.ics.oop.presenter;
 
 import agh.ics.oop.SimulationStats;
 import agh.ics.oop.StatsProvider;
+import agh.ics.oop.ThreadController;
 import agh.ics.oop.model.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
