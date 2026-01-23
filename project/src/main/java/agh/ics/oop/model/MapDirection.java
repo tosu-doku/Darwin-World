@@ -1,6 +1,5 @@
 package agh.ics.oop.model;
 
-import javax.management.ValueExp;
 
 public enum MapDirection {
     NORTH,

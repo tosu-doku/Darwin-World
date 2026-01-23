@@ -1,6 +1,6 @@
 package agh.ics.oop.model.util;
 
-import agh.ics.oop.model.JungleMap;
+
 
 public record SimulationConfig(
         int mapWidth, int mapHeight,

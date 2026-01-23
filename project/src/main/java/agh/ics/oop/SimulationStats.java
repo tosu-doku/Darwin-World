@@ -1,7 +1,6 @@
 package agh.ics.oop;
 
 import agh.ics.oop.model.Gene;
-import agh.ics.oop.model.WorldMap;
 
 import java.io.*;
 import java.util.List;

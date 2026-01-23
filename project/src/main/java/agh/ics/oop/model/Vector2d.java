@@ -1,6 +1,5 @@
 package agh.ics.oop.model;
 
-import java.util.Objects;
 
 public record Vector2d(int x, int y) {
     @Override

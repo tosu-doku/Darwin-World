@@ -27,7 +27,7 @@ public class Animal implements WorldElement {
             .comparingInt(Animal::getEnergy)
             .thenComparingInt(Animal::getAge)
             .thenComparingInt(Animal::getEnergy)
-            .reversed(); // dorobic losowanie?
+            .reversed();
 
 
     public Animal(SimulationConfig config, Vector2d position, int energy){
