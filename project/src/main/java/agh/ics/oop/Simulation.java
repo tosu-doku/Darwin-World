@@ -3,10 +3,7 @@ package agh.ics.oop;
 import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.SimulationConfig;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Simulation implements Runnable,StatsProvider,ThreadController {
     private final SimulationConfig config;
@@ -144,12 +141,25 @@ public class Simulation implements Runnable,StatsProvider,ThreadController {
         int totalDead = map.getTotalDeadCount();
         long totalDeadAge = map.getTotalDeadAgeSum();
         Set<Vector2d> occupied = new HashSet<>(map.getGrasses().keySet());
+        Map<List<Gene>,Integer> countGenotypes = new HashMap<>();
         List<Animal> currentAnimals = this.getAnimals();
         for (Animal animal : currentAnimals){
             if(animal.getEnergy()<=0) continue;
+            int currentCount = countGenotypes.getOrDefault(animal.getGenotype(), 0);
+            countGenotypes.put(animal.getGenotype(), currentCount + 1);
             childrenCount+=animal.getChildrenCount();
             sumEnergy+=animal.getEnergy();
             occupied.add(animal.getPosition());
+        }
+
+        List<Gene> maxKey = null;
+        int maxValue = Integer.MIN_VALUE;
+
+        for (Map.Entry<List<Gene>, Integer> entry : countGenotypes.entrySet()) {
+            if (maxKey == null || entry.getValue() > maxValue) {
+                maxValue = entry.getValue();
+                maxKey = entry.getKey();
+            }
         }
 
         SimulationStats currentStats = new SimulationStats(
@@ -159,7 +169,8 @@ public class Simulation implements Runnable,StatsProvider,ThreadController {
                 occupied.size(),
                 !currentAnimals.isEmpty() ? (double) sumEnergy / currentAnimals.size(): 0,
                 totalDead!=0 ? (double) totalDeadAge / totalDead : 0,
-                !currentAnimals.isEmpty() ?(double)childrenCount / currentAnimals.size() : 0
+                !currentAnimals.isEmpty() ?(double)childrenCount / currentAnimals.size() : 0,
+                maxKey
         );
 
         currentStats.saveToCsv(map.getId());

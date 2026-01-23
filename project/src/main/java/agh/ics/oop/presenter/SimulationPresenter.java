@@ -37,6 +37,7 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML private Label avgEnergyLabel;
     @FXML private Label avgLifespanLabel;
     @FXML private Label avgChildrenLabel;
+    @FXML private Label mostPopGenotypeLabel;
 
     @FXML private LineChart<Number, Number> populationChart;
     @FXML private ComboBox<String> statSelector;
@@ -46,7 +47,8 @@ public class SimulationPresenter implements MapChangeListener {
     private String currentlyTracked = "Animals";
 
     private static final Color STEP_COLOR = Color.LIGHTYELLOW;
-    private static final Color JUNGLE_COLOR = Color.web("#228B22");
+    private static final Color JUNGLE_COLOR = Color.LIGHTGREEN;
+    private static final Color GRASS_COLOR = Color.GREEN;
 
     @FXML
     public void initialize() {
@@ -151,7 +153,7 @@ public class SimulationPresenter implements MapChangeListener {
                     if (element instanceof Animal animal) {
                         drawAnimal(graphics, animal, x, y, cellSize);
                     } else {
-                        graphics.setFill(Color.GREEN);
+                        graphics.setFill(GRASS_COLOR);
                         graphics.fillRect(x, y, cellSize, cellSize);
                     }
                 }
@@ -173,7 +175,7 @@ public class SimulationPresenter implements MapChangeListener {
         if (health < 0.2) return Color.RED;
         if (health < 0.5) return Color.ORANGE;
         if (health < 0.75) return Color.YELLOW;
-        return Color.LIGHTGREEN;
+        return Color.WHITE;
     }
 
     private boolean isJungle(Vector2d pos) {
@@ -192,6 +194,7 @@ public class SimulationPresenter implements MapChangeListener {
         avgEnergyLabel.setText(String.format("Avg Energy: %.2f", stats.avgEnergy()));
         avgLifespanLabel.setText(String.format("Avg Lifespan: %.2f", stats.avgLifespan()));
         avgChildrenLabel.setText(String.format("Avg Children Amount: %.2f", stats.avgChildren()));
+        mostPopGenotypeLabel.setText(stats.mostPopularGenotype().toString());
 
         allSeries.get("Animals").getData().add(new XYChart.Data<>(stats.day(), (double) stats.animalCount()));
         allSeries.get("Grass").getData().add(new XYChart.Data<>(stats.day(), (double) stats.grassCount()));

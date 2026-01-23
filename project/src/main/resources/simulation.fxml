@@ -25,6 +25,8 @@
             <Label fx:id="avgEnergyLabel" text="Avg Energy: 0"/>
             <Label fx:id="avgLifespanLabel" text="Avg Lifespan: 0"/>
             <Label fx:id="avgChildrenLabel" text="Avg Children Amount: 0"/>
+            <Label text="Most Popular Genotype:"/>
+            <Label fx:id="mostPopGenotypeLabel" text=" " wrapText="true" maxWidth="200"/>
             <Separator />
             <Label text="Choose a statistic:" style="-fx-font-weight: bold;" />
             <ComboBox fx:id="statSelector" maxWidth="Infinity" />
