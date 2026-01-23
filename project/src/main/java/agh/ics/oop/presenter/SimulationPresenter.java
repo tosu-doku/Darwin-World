@@ -1,7 +1,8 @@
 package agh.ics.oop.presenter;
 
-import agh.ics.oop.Simulation;
 import agh.ics.oop.SimulationStats;
+import agh.ics.oop.StatsProvider;
+import agh.ics.oop.ThreadController;
 import agh.ics.oop.model.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -19,7 +20,8 @@ import java.util.Optional;
 public class SimulationPresenter implements MapChangeListener {
     private WorldMap map;
     private int startEnergy;
-    private Simulation simulation;
+    private ThreadController controller;
+    private StatsProvider provider;
     private boolean isPaused = false;
 
     @FXML private Label moveInfoLabel;
@@ -57,8 +59,12 @@ public class SimulationPresenter implements MapChangeListener {
         this.startEnergy = startEnergy;
     }
 
-    public void setSimulation(Simulation sim){
-        this.simulation = sim;
+    public void setThreadControler(ThreadController controller){
+        this.controller = controller;
+    }
+
+    public void setStatsProvider(StatsProvider provider){
+        this.provider = provider;
     }
 
     private void clearGrid(GraphicsContext graphics) {
@@ -174,7 +180,7 @@ public class SimulationPresenter implements MapChangeListener {
 
     @Override
     public void mapChanged(WorldMap world_map, String message) {
-        SimulationStats stats = simulation.getStats();
+        SimulationStats stats = provider.getStats();
         Platform.runLater(() -> {
             drawMap();
             updateStatsUI(stats);
@@ -183,14 +189,14 @@ public class SimulationPresenter implements MapChangeListener {
 
     @FXML
     public void onPauseButtonClicked() {
-        if (simulation == null) return;
+        if (this.controller == null) return;
 
         if (isPaused) {
-            simulation.resume();
+            this.controller.resume();
             pauseButton.setText("Pause");
             isPaused = false;
         } else {
-            simulation.pause();
+            this.controller.pause();
             pauseButton.setText("Resume");
             isPaused = true;
         }
@@ -198,8 +204,8 @@ public class SimulationPresenter implements MapChangeListener {
 
     @FXML
     public void onStopButtonClicked() {
-        if (simulation != null) {
-            simulation.stop();
+        if (this.controller != null) {
+            this.controller.stop();
         }
     }
 }
