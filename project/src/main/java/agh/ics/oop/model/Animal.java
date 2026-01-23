@@ -4,6 +4,8 @@ import agh.ics.oop.model.util.SimulationConfig;
 
 import java.util.*;
 
+import static agh.ics.oop.model.MapDirection.*;
+
 
 /**
  * An animal living in the {@link JungleMap},
@@ -16,6 +18,8 @@ public class Animal implements WorldElement {
     private int energy;
     private int age = 0;
     private int childrenCount = 0;
+    private boolean isFomoActive = false;
+    private MapDirection fomoDirectionOverride;
 
     private final SimulationConfig config;
 
@@ -32,7 +36,7 @@ public class Animal implements WorldElement {
 
     public Animal(SimulationConfig config, Vector2d position, int energy, Genotype genotype){
         this.config = config;
-        this.direction = MapDirection.NORTH;
+        this.direction = NORTH;
         this.position = position;
         this.energy = energy;
         this.genotype = genotype;
@@ -87,6 +91,9 @@ public class Animal implements WorldElement {
     public void move(MoveValidator moveValidator){
         if(this.energy>0){
             MapDirection directionToMove = genotype.getNewDirection(this.direction);
+            if(isFomoActive){
+                directionToMove = fomoDirectionOverride;
+            }
             Vector2d posAfterMove = this.position.add(directionToMove.toVector());
             if (moveValidator.isInBounds(posAfterMove)){
 //                System.out.println(String.format("%s -> %s, (%s -> %s)",
@@ -105,8 +112,8 @@ public class Animal implements WorldElement {
                     posAfterMove = new Vector2d(maxBound.x()-posAfterMove.x(),this.position.y());
                     directionToMove = this.direction.rotate(4);
                 }
-                System.out.println(String.format("Warped movement %s -> %s, (%s -> %s)",
-                        this.position, posAfterMove, this.direction, directionToMove));
+//                System.out.println(String.format("Warped movement %s -> %s, (%s -> %s)",
+//                        this.position, posAfterMove, this.direction, directionToMove));
             }
             this.position = posAfterMove;
             this.direction = directionToMove;
@@ -165,6 +172,27 @@ public class Animal implements WorldElement {
         this.decreaseEnergy(config.REPRODUCE_ENERGY_COST());
         otherParent.decreaseEnergy(config.REPRODUCE_ENERGY_COST());
         return new Animal(this.config, this.position, childEnergy, childGenotype);
+    }
+
+    public void triggerFOMO(Vector2d pos){
+        this.isFomoActive=true;
+        int sum = 0;
+        int directionX = (int) Math.signum(pos.x() - this.position.x());
+        int directionY = (int) Math.signum(pos.y() - this.position.y());
+
+        String key = directionX + ":" + directionY;
+
+        this.fomoDirectionOverride = switch (key) {
+            case "0:1"   -> NORTH;
+            case "1:1"   -> NORTHEAST;
+            case "1:0"   -> EAST;
+            case "1:-1"  -> SOUTHEAST;
+            case "0:-1"  -> SOUTH;
+            case "-1:-1" -> SOUTHWEST;
+            case "-1:0"  -> WEST;
+            case "-1:1"  -> NORTHWEST;
+            default -> throw new IllegalArgumentException("Unknown move direction");
+        };
     }
 
 

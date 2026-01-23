@@ -19,13 +19,13 @@ public class World {
          }
          System.out.println("Start");
 
-         SimulationConfig config = new SimulationConfig(10, 10, 25, 20, 8, 20, 75, 100, 5, 50, 15, false, 3, 15);
+         SimulationConfig config = new SimulationConfig(10, 10, 25, 20, 8, 20, 75, 100, 5, 50, 15, true, 3, 3,2,10,5);
          JungleMap map = new JungleMap(config);
-         map.registerListener(new ConsoleMapDisplay());
+//         map.registerListener(new ConsoleMapDisplay());
 
          try {
              Simulation simulation = new Simulation(map, config);
-             simulation.run(50);
+             simulation.run(20);
          }
          catch (IllegalArgumentException e){
              e.printStackTrace();
