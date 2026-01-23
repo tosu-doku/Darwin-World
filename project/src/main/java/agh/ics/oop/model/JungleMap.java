@@ -234,7 +234,6 @@ public class JungleMap implements WorldMap{
     }
 
     public boolean isInJungle(Vector2d position) {
-        // jungleLowerLeft i jungleUpperRight to Twoje pola wyznaczające dżunglę
         return position.follows(jungleBoundary.lowerBoundary()) && position.precedes(jungleBoundary.higherBoundary());
     }
 

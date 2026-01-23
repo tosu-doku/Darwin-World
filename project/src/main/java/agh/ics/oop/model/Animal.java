@@ -105,10 +105,6 @@ public class Animal implements WorldElement {
                 directionToMove = fomoDirectionOverride;
             }
             Vector2d posAfterMove = this.position.add(directionToMove.toVector());
-            if (moveValidator.isInBounds(posAfterMove)){
-//                System.out.println(String.format("%s -> %s, (%s -> %s)",
-//                        this.position, posAfterMove, this.direction, directionToMove));
-            } else {
                 Vector2d maxBound = moveValidator.getMapBoundary().higherBoundary();
                 if(!moveValidator.isInBounds(this.position.add(new Vector2d(directionToMove.toVector().x(), 0)))){
                     if(directionToMove.toVector().x()<0){
@@ -122,9 +118,6 @@ public class Animal implements WorldElement {
                     posAfterMove = new Vector2d(maxBound.x()-posAfterMove.x(),this.position.y());
                     directionToMove = this.direction.rotate(4);
                 }
-//                System.out.println(String.format("Warped movement %s -> %s, (%s -> %s)",
-//                        this.position, posAfterMove, this.direction, directionToMove));
-            }
             this.position = posAfterMove;
             this.direction = directionToMove;
 
