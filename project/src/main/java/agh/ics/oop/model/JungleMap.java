@@ -125,6 +125,7 @@ public class JungleMap implements WorldMap{
             if (!grasses.containsKey(candidates.getFirst().getPosition())) continue;
             candidates.sort(Animal.animalComparator);
             Animal first = candidates.getFirst();
+            if(first.isFomoActive()) break;
             first.increaseEnergy(config.ENERGY_FROM_EATING_GRASS_AMOUNT());
             grasses.remove(first.getPosition());
         }
@@ -137,7 +138,7 @@ public class JungleMap implements WorldMap{
             candidates.sort(Animal.animalComparator);
             Animal firstParent = candidates.get(0);
             Animal secondParent = candidates.get(1);
-
+            if (firstParent.isFomoActive()) break;
             if (firstParent.getEnergy()>config.REPRODUCE_ENERGY_LIMIT() && secondParent.getEnergy()>config.REPRODUCE_ENERGY_LIMIT()) {
                 Animal child = firstParent.reproduce(secondParent);
                 firstParent.increaseChildrenCount();

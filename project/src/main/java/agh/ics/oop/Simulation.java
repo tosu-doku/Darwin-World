@@ -4,7 +4,6 @@ import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.SimulationConfig;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class Simulation implements Runnable {
@@ -40,8 +39,6 @@ public class Simulation implements Runnable {
 
     @Override
     public void run(){
-        int days;
-
         while (running&&!animalList.isEmpty()) {
             synchronized (pauseLock) {
                 if (!running) {
@@ -60,6 +57,7 @@ public class Simulation implements Runnable {
             }
             for(Animal animal : animalList){
                 map.move(animal);
+
             }
 
             map.consumeGrass();
@@ -70,10 +68,16 @@ public class Simulation implements Runnable {
             map.placeGrass(config.GRASS_REGROW_AMOUNT());
             map.removeDead();
 
+            for(Animal animal : animalList){
+                animal.setFomo(false);
+
+            }
             this.animalList = new ArrayList<>(map.getAnimals().stream().filter(animal -> animal.getEnergy()>0).toList());
             if(config.IS_MODIFIER_ACTIVE())
                 checkFOMO();
-            System.out.println(map);
+
+
+
             this.day += 1;
             try {
                 Thread.sleep(100);
