@@ -101,7 +101,7 @@ public class StartPresenter {
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Błąd konfiguracji");
+        alert.setTitle("Configuration Error");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
