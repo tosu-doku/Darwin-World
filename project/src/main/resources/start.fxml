@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane minHeight="400.0" minWidth="300.0" xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="agh.ics.oop.presenter.StartPresenter">
+
+    <center>
+        <VBox spacing="10.0">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+
+            <Label text="Map Dimensions" style="-fx-font-weight: bold" />
+            <HBox spacing="10">
+                <TextField fx:id="mapWidthField" promptText="Width"  />
+                <TextField fx:id="mapHeightField" promptText="Height"/>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Start With FOMO Variant" />
+                <CheckBox fx:id="fomoBoolean" />
+            </HBox>
+
+
+            <Label text="Energy Settings" style="-fx-font-weight: bold" />
+            <TextField fx:id="limitEnergyField" promptText="Energy Limit" />
+            <TextField fx:id="startEnergyField" promptText="Start Animal Energy" />
+            <TextField fx:id="healthyEnergyField" promptText="Healthy Animal Energy" />
+            <TextField fx:id="moveCostField" promptText="Move Energy Cost"  />
+            <TextField fx:id="reproductionCostField" promptText="Reproduction Energy Cost"  />
+            <TextField fx:id="grassEnergyField" promptText="Energy from Grass"  />
+
+            <Label text="Spawn Settings" style="-fx-font-weight: bold" />
+            <TextField fx:id="animalAmountField" promptText="Start Animal Amount"  />
+            <TextField fx:id="startGrassAmountField" promptText="Start Grass Amount"  />
+            <TextField fx:id="grassAmountField" promptText="Grass per Day" />
+            <TextField fx:id="genotypeLength" promptText="Genotype Length" />
+            <TextField fx:id="maxMutationsField" promptText="Max Mutations Amount" />
+
+            <Separator />
+
+            <Button text="Start Simulation" onAction="#onStartClicked"
+                    maxWidth="Infinity" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
+        </VBox>
+    </center>
+</BorderPane>

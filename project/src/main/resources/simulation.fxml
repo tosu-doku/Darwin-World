@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="agh.ics.oop.presenter.SimulationPresenter"
+            prefHeight="600.0" prefWidth="800.0">
+
+    <left>
+        <VBox spacing="10" prefWidth="200" style="-fx-background-color: #f4f4f4; -fx-border-color: #cccccc;">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Statystyki" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+            <Label fx:id="dayCountLabel" text="Day: 0"/>
+            <Label fx:id="animalCountLabel" text="Animals: 0"/>
+            <Label fx:id="grassCountLabel" text="Grass: 0"/>
+            <Label fx:id="freeFieldsLabel" text="Free: 0"/>
+            <Label fx:id="avgEnergyLabel" text="Avg Energy: 0"/>
+            <Label fx:id="avgLifespanLabel" text="Avg Lifespan: 0"/>
+            <Separator />
+            <Button fx:id="pauseButton" text="Pause" onAction="#onPauseButtonClicked" />
+            <Button fx:id="stopButton" text="Stop" onAction="#onStopButtonClicked" />
+        </VBox>
+    </left>
+
+    <center>
+        <ScrollPane fitToHeight="true" fitToWidth="true">
+            <StackPane VBox.vgrow="ALWAYS" style="-fx-background-color: #eeeeee;">
+                <Canvas fx:id="mapGrid" width="500" height="500" />
+            </StackPane>
+        </ScrollPane>
+    </center>
+</BorderPane>

@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
 group = 'org.example'
@@ -17,6 +18,7 @@ java {
 }
 
 
+
 repositories {
     mavenCentral()
 }
@@ -29,4 +31,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+javafx{
+    version="21"
+    modules = ['javafx.base', 'javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.media', 'javafx.swing', 'javafx.web']
 }

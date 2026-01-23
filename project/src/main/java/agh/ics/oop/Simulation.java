@@ -6,11 +6,18 @@ import agh.ics.oop.model.util.SimulationConfig;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Simulation {
+public class Simulation implements Runnable {
     private final SimulationConfig config;
     private List<Animal> animalList = new ArrayList<>();
     private final WorldMap map;
     private int day = 0;
+    private volatile boolean running = true;
+    private volatile boolean paused = false;
+    private final Object pauseLock = new Object();
+
+    public int getDay(){
+        return this.day;
+    }
 
     public Simulation(WorldMap map, SimulationConfig config)
     {
@@ -30,8 +37,26 @@ public class Simulation {
         return this.animalList;
     }
 
-    public void run(int days){
-        for (int i = 0; i <= days; i++) {
+    @Override
+    public void run(){
+        int days;
+
+        while (running&&!animalList.isEmpty()) {
+            synchronized (pauseLock) {
+                if (!running) {
+                    break;
+                }
+                if (paused) {
+                    try {
+                        pauseLock.wait();
+                    } catch (InterruptedException ex) {
+                        break;
+                    }
+                    if (!running) {
+                        break;
+                    }
+                }
+            }
             for(Animal animal : animalList){
                 map.move(animal);
             }
@@ -46,8 +71,27 @@ public class Simulation {
             this.day += 1;
 
             this.animalList = new ArrayList<>(map.getAnimals().stream().filter(animal -> animal.getEnergy()>0).toList());
-            System.out.println(map);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
+    }
+    public void stop() {
+        running = false;
+        resume();
+    }
+
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        synchronized (pauseLock) {
+            paused = false;
+            pauseLock.notifyAll();
+        }
     }
 }

@@ -25,7 +25,7 @@ public class World {
 
          try {
              Simulation simulation = new Simulation(map, config);
-             simulation.run(50);
+             simulation.run();
          }
          catch (IllegalArgumentException e){
              e.printStackTrace();
