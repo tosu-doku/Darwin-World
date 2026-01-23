@@ -85,17 +85,20 @@ public class Simulation implements Runnable,StatsProvider,ThreadController {
     }
 
     private void checkFOMO(){
-//        this.animalList.sort(Comparator
-//                .comparingInt((Animal animal) -> animal.getPosition().x())
-//                .thenComparing((Animal animal) -> animal.getPosition().y()));
         for(int i=0; i<animalList.size(); i++){
+            Vector2d animal1pos = animalList.get(i).getPosition();
             int count_inside_fomo = 0;
+
             for(int j=0; j<animalList.size(); j++){
-                if(Math.abs(animalList.get(i).getPosition().x()-animalList.get(j).getPosition().x())<config.FOMO_RADIUS_INSIDE()
-                && Math.abs(animalList.get(i).getPosition().y()-animalList.get(j).getPosition().y())<config.FOMO_RADIUS_INSIDE()){
+                Vector2d animal2pos = animalList.get(j).getPosition();
+
+                if(Math.abs(animal1pos.x()-animal2pos.x())<config.FOMO_RADIUS_INSIDE()
+                && Math.abs(animal1pos.y()-animal2pos.y())<config.FOMO_RADIUS_INSIDE()
+                && animalList.get(i).getEnergy()>0
+                && animalList.get(j).getEnergy()>0){
                     count_inside_fomo += 1;
                     if(count_inside_fomo >= config.AMOUNT_TO_TRIGGER_FOMO()){
-                        triggerFOMO(animalList.get(i).getPosition());
+                        triggerFOMO(animal1pos);
                         return;
                     }
                 }
