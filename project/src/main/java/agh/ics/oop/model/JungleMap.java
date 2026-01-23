@@ -1,6 +1,5 @@
 package agh.ics.oop.model;
 
-import agh.ics.oop.SimulationStats;
 import agh.ics.oop.model.util.MapVisualizer;
 import agh.ics.oop.model.util.SimulationConfig;
 
@@ -241,9 +240,7 @@ public class JungleMap implements WorldMap{
         this.listeners.add(listener);
     }
 
-    public void removeListener(MapChangeListener listener){
-        this.listeners.remove(listener);
-    }
+
 
     public void mapChanged(String message){
         this.listeners.forEach(listener -> listener.mapChanged(this,message));

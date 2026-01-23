@@ -1,7 +1,5 @@
 package agh.ics.oop.model;
 
-import agh.ics.oop.SimulationStats;
-import agh.ics.oop.World;
 
 import java.util.List;
 import java.util.Map;

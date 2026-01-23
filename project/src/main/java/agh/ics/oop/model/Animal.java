@@ -93,11 +93,6 @@ public class Animal implements WorldElement {
         return this.position;
     }
 
-    @Override
-    public boolean isAt(Vector2d position){
-        return Objects.equals(this.position,position);
-    }
-
     public void move(MoveValidator moveValidator){
         if(this.energy>0){
             MapDirection directionToMove = genotype.getNewDirection(this.direction);
@@ -161,9 +156,6 @@ public class Animal implements WorldElement {
             childGenes.addAll(weaker.getGenotype().subList(0, reversedSplitPoint));
             childGenes.addAll(stronger.getGenotype().subList(reversedSplitPoint, stronger.getGenotype().size()));
         }
-//        System.out.println(stronger.getGenotype());
-//        System.out.println(weaker.getGenotype());
-//        System.out.println(childGenes);
         Genotype childGenotype = new Genotype(config,childGenes);
 
         int mutationAmount = 0;
