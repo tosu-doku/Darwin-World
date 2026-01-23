@@ -173,9 +173,12 @@ public class Animal implements WorldElement {
 //        System.out.println(childGenes);
         Genotype childGenotype = new Genotype(config,childGenes);
 
-        int mutationAmount = r.nextInt(config.MAX_MUTATION_AMOUNT());
-        for(int i=0; i<mutationAmount; i++){
-            childGenotype.mutate();
+        int mutationAmount = 0;
+        if(config.MAX_MUTATION_AMOUNT()>0) {
+            mutationAmount = r.nextInt(config.MAX_MUTATION_AMOUNT());
+            for (int i = 0; i < mutationAmount; i++) {
+                childGenotype.mutate();
+            }
         }
 
         int childEnergy = 2*config.REPRODUCE_ENERGY_COST();
