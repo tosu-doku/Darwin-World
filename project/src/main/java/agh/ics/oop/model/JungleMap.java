@@ -189,47 +189,50 @@ public class JungleMap implements WorldMap{
         int lowBoundX = mapBoundary.lowerBoundary().x();
         int lowBoundY = mapBoundary.lowerBoundary().y();
 
-        int totalMapSpace = (highBoundX-lowBoundX)*(highBoundY-lowBoundY);
-        amount = Math.min(amount, totalMapSpace - grasses.size());
-        boolean reverse = amount > totalMapSpace / 2;
+        List<Vector2d> emptyJungleSpaces = new ArrayList<>();
+        List<Vector2d> emptyNonJungleSpaces = new ArrayList<>();
 
-        if(reverse){
-            amount = totalMapSpace - amount;
-            for (int i = lowBoundX; i < highBoundX; i++) {
-                for (int j = lowBoundY; j < highBoundY; j++) {
-                    grasses.put(new Vector2d(i,j),new Grass(new Vector2d(i,j)));
+        for (int x = lowBoundX; x < highBoundX; x++ ) {
+            for (int y = lowBoundY; y < highBoundY; y++){
+                Vector2d pos = new Vector2d(x,y);
+                if (!grasses.containsKey(pos)){
+                    if (isInJungle(pos)){
+                        emptyJungleSpaces.add(pos);
+                    } else {
+                        emptyNonJungleSpaces.add(pos);
+                    }
                 }
             }
         }
 
         for (int i = 0; i < amount; i++) {
-            placeSingularGrass(reverse);
+            Vector2d res;
+            if(!emptyJungleSpaces.isEmpty() && !emptyNonJungleSpaces.isEmpty()){
+                if(Math.random()<0.8){
+                    // spawn in jungle
+                    res = swapAndPop(emptyJungleSpaces, (int) (Math.random() * emptyJungleSpaces.size()));
+                } else {
+                    // spawn outside
+                    res = swapAndPop(emptyNonJungleSpaces, (int) (Math.random() * emptyNonJungleSpaces.size()));
+                }
+            } else if (!emptyJungleSpaces.isEmpty()) {
+                // spawn in jungle
+                res = swapAndPop(emptyJungleSpaces, (int) (Math.random() * emptyJungleSpaces.size()));
+            } else if (!emptyNonJungleSpaces.isEmpty()) {
+                //spawn outside
+                res = swapAndPop(emptyNonJungleSpaces, (int) (Math.random() * emptyNonJungleSpaces.size()));
+            } else {
+                break;
+            }
+            grasses.put(res, new Grass(res));
         }
     }
 
-    private void placeSingularGrass(boolean reverse){
-        boolean willSpawnInJungle = reverse ? (Math.random()<0.2) : (Math.random()<0.8);
-        int randomY;
-        if(willSpawnInJungle){
-            randomY = (int) Math.round(Math.random()*(jungleBoundary.higherBoundary().y() - jungleBoundary.lowerBoundary().y()) + jungleBoundary.lowerBoundary().y());
-        } else {
-            if(Math.random()<0.5){
-                randomY = (int) Math.floor(Math.random()*(jungleBoundary.lowerBoundary().y()));
-            } else {
-                randomY = (int) Math.ceil(Math.random()*(jungleBoundary.lowerBoundary().y()) + jungleBoundary.higherBoundary().y());
-            }
-        }
-
-        int randomX = (int) Math.round(Math.random()*mapBoundary.higherBoundary().x());
-
-        if(grasses.containsKey(new Vector2d(randomX,randomY)) && reverse) {
-            grasses.remove(new Vector2d(randomX, randomY));
-        }
-        else if(!grasses.containsKey(new Vector2d(randomX,randomY)) && !reverse) {
-            grasses.put(new Vector2d(randomX, randomY), new Grass(new Vector2d(randomX, randomY)));
-        } else {
-            placeSingularGrass(reverse);
-        }
+    private Vector2d swapAndPop(List<Vector2d> positions, int idx){
+        Vector2d val = positions.get(idx);
+        positions.set(idx, positions.getLast());
+        positions.removeLast();
+        return val;
     }
 
     public boolean isInJungle(Vector2d position) {
