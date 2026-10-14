@@ -74,3 +74,9 @@ Symulacja pozwala na dostosowanie parametrów, takich jak:
 - **Interfejs graficzny:** JavaFX
 - **System budowania:** Gradle
 - **Architektura:** Model-View-Presenter (MVP)
+
+## Uruchamianie Projektu
+
+Aby uruchomić projekt należy wykonać:
+- gradle sync
+- run WorldGUI (java/agh/ics/oop/WorldGUI.java)
